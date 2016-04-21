@@ -14,7 +14,7 @@ class Storage(val file: File) {
   private val raf: RandomAccessFile
   private val channel: FileChannel
 
-  private val index = TreeMapIndex()
+  internal val index = TreeMapIndex()
 
   private var _buffer: ByteArray? = null
   private val copyBuffer: ByteArray
@@ -220,8 +220,27 @@ class Storage(val file: File) {
   }
 
   // TODO implement
-  fun delete(encodedKey: String): Boolean = false
+  fun delete(key: String): Boolean {
+    if (!index.containsKey(key)) {
+      return false
+    }
 
+    val pointer = index.get(key)!!
+
+    if (index.isPointerLast(pointer)) {
+      // Just trim last.
+      raf.setLength(pointer)
+    } else {
+      val next = index.nextPointer(pointer)!!
+      val diff = next - pointer
+
+      shiftContentLeft(next, diff)
+    }
+
+    index.remove(key)
+
+    return true
+  }
 
   interface Index {
     fun put(key: String, pointer: Long)
@@ -235,6 +254,8 @@ class Storage(val file: File) {
     fun isPointerLast(pointer: Long): Boolean
 
     fun shiftPointersLeft(from: Long, diff: Long)
+
+    fun remove(key: String)
 
   }
 
@@ -284,6 +305,13 @@ class Storage(val file: File) {
 
         i++
       }
+    }
+
+    override fun remove(key: String) {
+      val pointer = indexMap[key] ?: return
+      indexMap.remove(key)
+      pointers.remove(pointer)
+      Collections.sort(pointers)
     }
 
   }
