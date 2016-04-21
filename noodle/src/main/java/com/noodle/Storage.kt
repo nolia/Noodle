@@ -219,7 +219,6 @@ class Storage(val file: File) {
     index.put(key, pointer)
   }
 
-  // TODO implement
   fun delete(key: String): Boolean {
     if (!index.containsKey(key)) {
       return false

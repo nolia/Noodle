@@ -1,6 +1,7 @@
 package com.noodle
 
 import org.junit.After
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 import java.io.File
@@ -28,8 +29,7 @@ class StorageTest : BaseTests() {
   }
 
   @Test fun createFile() {
-    val st = Storage("simple.noodle")
-    storages.add(st)
+    val st = newStorage()
 
     assert(st.file.exists())
   }
@@ -50,8 +50,7 @@ class StorageTest : BaseTests() {
   }
 
   @Test fun readFromEmptyFile() {
-    val st = Storage("somefile.noodle")
-    storages.add(st)
+    val st = newStorage()
 
     val r = st.get("123")
 
@@ -59,8 +58,7 @@ class StorageTest : BaseTests() {
   }
 
   @Test fun putAndDelete() {
-    val st = Storage("somefile.noodle")
-    storages.add(st)
+    val st = newStorage()
 
     val record = Record("123", "data")
     st.put(record)
@@ -69,6 +67,30 @@ class StorageTest : BaseTests() {
 
     val r = st.get("123")
     assertNull(r)
+  }
+
+  @Test fun putMultiAndDeleteFromTheMiddle() {
+    val st = newStorage()
+    val r1 = Record("1", "a")
+    val r2 = Record("2", "b")
+    val r3 = Record("3", "c")
+
+    st.put(r1)
+    st.put(r2)
+    st.put(r3)
+
+    assert(st.delete(r2.encodedKey))
+
+    assertNotNull(st.get(r1.encodedKey))
+    assertNotNull(st.get(r3.encodedKey))
+
+    assertNull(st.get(r2.encodedKey))
+  }
+
+  private fun newStorage(): Storage {
+    val st = Storage("data.noodle")
+    storages.add(st)
+    return st
   }
 
 }
