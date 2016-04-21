@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+  compileSdkVersion 23
+  buildToolsVersion "23.0.2"
+
+  defaultConfig {
+    applicationId "com.noodle.sample"
+    minSdkVersion 14
+    targetSdkVersion 23
+    versionCode 1
+    versionName "1.0"
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+  }
+}
+
+ext {
+  supportLibVersion = '23.3.0'
+}
+
+dependencies {
+  compile project(':noodle')
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  testCompile 'junit:junit:4.12'
+  compile "com.android.support:appcompat-v7:$supportLibVersion"
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+  kapt "org.androidannotations:androidannotations:3.3.2"
+  compile 'org.androidannotations:androidannotations-api:3.3.2'
+
+}
+
+kapt {
+  generateStubs = true
+  arguments {
+    arg("androidManifestFile", variant.outputs[0].processResourcesTask.manifestFile)
+  }
+}
+
