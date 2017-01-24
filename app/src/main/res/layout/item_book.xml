@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="?selectableItemBackground"
+              android:elevation="4dp"
+              android:layout_margin="8dp"
+              android:orientation="vertical">
+
+
+  <TextView
+    android:id="@+id/bookTitle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:textSize="24sp"
+    tools:text="Zero to One – Notes on Start Ups, or How to Build the Future"
+    android:textColor="#212121"
+    />
+
+  <TextView
+    android:id="@+id/bookAuthor"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:textSize="18sp"
+    tools:text="by Blake Masters, Peter Thiel"
+    android:textColor="#626262"
+    />
+
+</LinearLayout>

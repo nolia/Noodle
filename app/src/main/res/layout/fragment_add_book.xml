@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:minWidth="300dp"
+  android:minHeight="200dp"
+  android:orientation="vertical"
+  android:padding="8dp">
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+    android:text="Title:"
+    android:layout_margin="4dp"
+    />
+
+  <EditText
+    android:id="@+id/inputTitle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:hint="book title here"
+    android:maxLines="3"
+    android:maxLength="255"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+    />
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+    android:text="Author:"
+    android:layout_margin="4dp"
+    />
+
+  <EditText
+    android:id="@+id/inputAuthor"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:hint="author name here"
+    android:maxLength="255"
+    android:maxLines="2"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+    />
+
+  <Button
+    android:id="@+id/buttonSave"
+    android:layout_margin="8dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="right"
+    android:text="Save"
+    />
+
+</LinearLayout>

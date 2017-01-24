@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'android-apt'
 
 android {
-  compileSdkVersion 23
-  buildToolsVersion "23.0.2"
+  compileSdkVersion 25
+  buildToolsVersion "25.0.2"
 
   defaultConfig {
     applicationId "com.noodle.sample"
     minSdkVersion 14
-    targetSdkVersion 23
+    targetSdkVersion 25
     versionCode 1
     versionName "1.0"
   }
@@ -25,25 +24,22 @@ android {
 }
 
 ext {
-  supportLibVersion = '23.3.0'
+  supportLibVersion = '25.1.0'
+  AAversion = '4.0.0'
 }
 
 dependencies {
   compile project(':noodle')
   compile fileTree(dir: 'libs', include: ['*.jar'])
+
   testCompile 'junit:junit:4.12'
+
   compile "com.android.support:appcompat-v7:$supportLibVersion"
-  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  compile "com.android.support:design:$supportLibVersion"
 
-  kapt "org.androidannotations:androidannotations:3.3.2"
-  compile 'org.androidannotations:androidannotations-api:3.3.2'
+  compile "org.androidannotations:androidannotations-api:$AAversion"
+  apt "org.androidannotations:androidannotations:$AAversion"
 
+  compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+  compile 'io.reactivex.rxjava2:rxjava:2.0.1'
 }
-
-kapt {
-  generateStubs = true
-  arguments {
-    arg("androidManifestFile", variant.outputs[0].processResourcesTask.manifestFile)
-  }
-}
-
