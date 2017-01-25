@@ -1,6 +1,5 @@
 package com.noodle.collection;
 
-import com.noodle.Key;
 import com.noodle.Result;
 
 import java.util.List;
@@ -13,9 +12,9 @@ public interface Collection<T> {
 
   Result<T> get(long id);
 
-  Result<Key<T>> put(T t);
+  Result<T> put(T t);
 
-  Result<T> delete(Key<T> key);
+  Result<T> delete(long id);
 
   Result<List<T>> all();
 
