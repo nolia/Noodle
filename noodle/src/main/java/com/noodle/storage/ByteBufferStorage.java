@@ -29,7 +29,12 @@ public class ByteBufferStorage implements Storage {
         final int dataStart = 8 + record.key.length;
         buffer.position(dataStart);
         buffer.put(record.data);
+
+        lastPosition = buffer.position();
+        return;
       }
+
+      remove(record.key);
     }
 
     // New record - append.
@@ -59,6 +64,13 @@ public class ByteBufferStorage implements Storage {
 
     final Record record = getRecordAt(pos);
 
+    if (treeMapIndex.size() == 1) {
+      lastPosition = 0;
+      buffer.position(0);
+      treeMapIndex.remove(new BytesWrapper(key));
+      return record;
+    }
+
     int removedBytes;
     if (pos == 0) {
       // First element, use compact.
@@ -79,12 +91,14 @@ public class ByteBufferStorage implements Storage {
       buffer.position(pos);
       buffer.put(temp);
 
-      lastPosition = buffer.position();
-
       removedBytes = record.size();
+
+      lastPosition -= removedBytes;
     }
 
-    treeMapIndex.remove(key);
+    buffer.position(lastPosition);
+
+    treeMapIndex.remove(new BytesWrapper(key));
 
     if (removedBytes > 0) {
       for (BytesWrapper keyInIndex : treeMapIndex.keySet()) {
