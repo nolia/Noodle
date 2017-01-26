@@ -57,6 +57,8 @@ public class Record {
         .put(key)
         .put(data);
 
+    buffer.position(0);
+
     return buffer;
   }
 }

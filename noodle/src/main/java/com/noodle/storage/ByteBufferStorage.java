@@ -12,9 +12,10 @@ public class ByteBufferStorage implements Storage {
   // 4 kb
   private static final int INITIAL_SIZE = 4 * 1024;
 
-  private ByteBuffer buffer = ByteBuffer.allocate(INITIAL_SIZE);
-  private TreeMap<byte[], Integer> treeMapIndex = new TreeMap<>();
-  private int lastPosition = 0;
+  ByteBuffer buffer = ByteBuffer.allocate(INITIAL_SIZE);
+
+  TreeMap<BytesWrapper, Integer> treeMapIndex = new TreeMap<>();
+  int lastPosition = 0;
 
   @Override
   public void put(final Record record) {
@@ -41,8 +42,8 @@ public class ByteBufferStorage implements Storage {
     }
 
     buffer.position(lastPosition);
-    treeMapIndex.put(record.key, lastPosition);
     buffer.put(record.asByteBuffer());
+    treeMapIndex.put(new BytesWrapper(record.key), lastPosition);
 
     lastPosition = buffer.position();
   }
@@ -86,7 +87,7 @@ public class ByteBufferStorage implements Storage {
     treeMapIndex.remove(key);
 
     if (removedBytes > 0) {
-      for (byte[] keyInIndex : treeMapIndex.keySet()) {
+      for (BytesWrapper keyInIndex : treeMapIndex.keySet()) {
         final int position = treeMapIndex.get(keyInIndex);
 
         if (position > pos) {
@@ -122,7 +123,7 @@ public class ByteBufferStorage implements Storage {
   }
 
   private int positionOf(final byte[] key) {
-    final Integer pos = treeMapIndex.get(key);
+    final Integer pos = treeMapIndex.get(new BytesWrapper(key));
     return pos == null ? -1 : pos;
   }
 }
