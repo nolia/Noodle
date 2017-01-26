@@ -16,8 +16,7 @@ class InMemorySpec extends RoboSpecification {
 
   void setup() {
     stringDescription = Description.of(Data)
-        .withGetIdOperator({ it.id } as Description.GetIdOperator<Data>)
-        .withSetIdOperator({ data, id -> data.id = id } as Description.SetIdOperator<Data>)
+        .withIdField("id")
         .build()
 
     inMemoryCollection = new InMemoryCollection<String>(Data, stringDescription)
@@ -25,8 +24,7 @@ class InMemorySpec extends RoboSpecification {
 
   def "should add item"() {
     given:
-    def a = new Data()
-    a.name = "A!"
+    def a = new Data(name: 'A')
 
     when:
     inMemoryCollection.put(a).now()
