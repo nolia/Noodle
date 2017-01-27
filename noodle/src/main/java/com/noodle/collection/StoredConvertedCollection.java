@@ -6,6 +6,7 @@ import com.noodle.description.Description;
 import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -74,7 +75,19 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   @Override
   public Result<List<T>> all() {
-    return null;
+    return new SimpleResult<>(new Callable<List<T>>() {
+      @Override
+      public List<T> call() throws Exception {
+        final List<byte[]> keys = storage.prefixedWith(String.format(Locale.US, "%s", clazz.getCanonicalName()).getBytes());
+        final ArrayList<T> result = new ArrayList<>();
+        for (int i = 0; i < keys.size(); i++) {
+          final Record record = storage.get(keys.get(i));
+          result.add(converter.fromBytes(record.getData(), clazz));
+        }
+
+        return result;
+      }
+    });
   }
 
   @Override

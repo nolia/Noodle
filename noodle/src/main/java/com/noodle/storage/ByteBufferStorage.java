@@ -1,6 +1,9 @@
 package com.noodle.storage;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -124,6 +127,17 @@ public class ByteBufferStorage implements Storage {
     return pos != -1
         ? getRecordAt(pos)
         : null;
+  }
+
+  @Override
+  public List<byte[]> prefixedWith(final byte[] prefix) {
+    final ArrayList<byte[]> keys = new ArrayList<>();
+    for (BytesWrapper wrapper : treeMapIndex.keySet()) {
+      if (wrapper.hasPrefix(prefix)) {
+        keys.add(wrapper.bytes);
+      }
+    }
+    return Collections.unmodifiableList(keys);
   }
 
   private Record getRecordAt(final int position) {

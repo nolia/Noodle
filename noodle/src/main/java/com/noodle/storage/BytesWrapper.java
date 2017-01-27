@@ -58,4 +58,18 @@ public class BytesWrapper implements Comparable<BytesWrapper> {
   public int hashCode() {
     return Arrays.hashCode(bytes);
   }
+
+  public boolean hasPrefix(final byte[] prefix) {
+    if (prefix.length > bytes.length) {
+      return false;
+    }
+
+    for (int i = 0; i < prefix.length; i++) {
+      if (bytes[i] != prefix[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

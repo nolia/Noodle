@@ -16,6 +16,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
   private GsonConverter converter
   private FileMappedBufferStorage storage
   private StoredConvertedCollection<Data> collection
+  private File file
 
   void setup() {
     description = Description.of(Data)
@@ -23,12 +24,17 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
         .build()
 
     converter = new GsonConverter(new Gson())
-    storage = new FileMappedBufferStorage(new File("collection-test.noodle"))
+    file = new File("collection-test.noodle")
+    storage = new FileMappedBufferStorage(file)
     collection = new StoredConvertedCollection<Data>(Data,
         description,
         converter,
         storage)
 
+  }
+
+  void cleanup() {
+    file.delete()
   }
 
   def "add and get some item"() {
@@ -42,7 +48,19 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     saved.id != 0
 
     and:
-    collection.get(saved.id).now() == data
+    data == collection.get(saved.id).now()
+
+  }
+
+  def "should get all items that were put previously"() {
+    given:
+    def items = [new Data(name: "Hello"), new Data(name: ", "), new Data(name: " world"), new Data(name: "!")]
+
+    when:
+    items.each {collection.put(it).now()}
+
+    then:
+    items == collection.all().now()
 
   }
 }
