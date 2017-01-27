@@ -50,7 +50,7 @@ public class Record {
     return result;
   }
 
-  public ByteBuffer asByteBuffer() {
+  ByteBuffer asByteBuffer() {
     final ByteBuffer buffer = ByteBuffer.allocate(size());
     buffer.putInt(key.length)
         .putInt(data.length)

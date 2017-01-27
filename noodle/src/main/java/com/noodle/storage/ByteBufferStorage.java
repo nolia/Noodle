@@ -9,12 +9,12 @@ import java.util.TreeMap;
 
 public class ByteBufferStorage implements Storage {
 
-  // 4 kb
-  private static final int INITIAL_SIZE = 4 * 1024;
+  // 1 kb
+  static final int INITIAL_SIZE = 1024;
 
   ByteBuffer buffer = ByteBuffer.allocate(INITIAL_SIZE);
 
-  TreeMap<BytesWrapper, Integer> treeMapIndex = new TreeMap<>();
+  protected TreeMap<BytesWrapper, Integer> treeMapIndex = new TreeMap<>();
   int lastPosition = 0;
 
   @Override
@@ -40,10 +40,7 @@ public class ByteBufferStorage implements Storage {
     // New record - append.
     if (record.size() + lastPosition >= buffer.limit()) {
       // Grow the buffer.
-      final ByteBuffer newBuffer = ByteBuffer.allocate(buffer.capacity() * 2);
-      newBuffer.put(buffer);
-
-      buffer = newBuffer;
+      growBufferSize();
     }
 
     buffer.position(lastPosition);
@@ -51,6 +48,13 @@ public class ByteBufferStorage implements Storage {
     treeMapIndex.put(new BytesWrapper(record.key), lastPosition);
 
     lastPosition = buffer.position();
+  }
+
+  protected void growBufferSize() {
+    final ByteBuffer newBuffer = ByteBuffer.allocate(buffer.capacity() * 2);
+    newBuffer.put(buffer);
+
+    buffer = newBuffer;
   }
 
 
