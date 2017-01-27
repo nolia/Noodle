@@ -93,22 +93,4 @@ public class InMemoryCollection<T> implements Collection<T> {
     return sequenceId;
   }
 
-  private class SimpleResult<K> implements Result<K> {
-
-
-    private final Callable<K> callable;
-
-    SimpleResult(Callable<K> callable) {
-      this.callable = callable;
-    }
-
-    @Override
-    public K now() {
-      try {
-        return callable.call();
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
 }

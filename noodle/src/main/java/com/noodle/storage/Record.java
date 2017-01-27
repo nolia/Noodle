@@ -24,6 +24,14 @@ public class Record {
     this.data = data;
   }
 
+  public byte[] getKey() {
+    return key;
+  }
+
+  public byte[] getData() {
+    return data;
+  }
+
   public int size() {
     return 8 + key.length + data.length;
   }

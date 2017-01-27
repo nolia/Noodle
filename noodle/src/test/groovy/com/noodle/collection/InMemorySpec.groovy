@@ -12,14 +12,14 @@ import org.robospock.RoboSpecification
 class InMemorySpec extends RoboSpecification {
 
   private InMemoryCollection<Data> inMemoryCollection
-  private Description<Data> stringDescription
+  private Description<Data> description
 
   void setup() {
-    stringDescription = Description.of(Data)
+    description = Description.of(Data)
         .withIdField("id")
         .build()
 
-    inMemoryCollection = new InMemoryCollection<String>(Data, stringDescription)
+    inMemoryCollection = new InMemoryCollection<>(Data, description)
   }
 
   def "should add item"() {
