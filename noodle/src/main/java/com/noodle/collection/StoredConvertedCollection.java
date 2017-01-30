@@ -70,7 +70,16 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   @Override
   public Result<T> delete(final long id) {
-    return null;
+    return new SimpleResult<>(new Callable<T>() {
+      @Override
+      public T call() throws Exception {
+        final byte[] key = getKey(id);
+        final Record removed = storage.remove(key);
+        return removed != null
+            ? converter.fromBytes(removed.getData(), clazz)
+            : null;
+      }
+    });
   }
 
   @Override

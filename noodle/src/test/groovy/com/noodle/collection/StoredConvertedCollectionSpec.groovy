@@ -61,6 +61,18 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
     then:
     items == collection.all().now()
+  }
+
+  def "should delete item"() {
+    given:
+    def item = new Data(name: "You shall not pass!")
+    collection.put(item).now()
+
+    when:
+    def deleted = collection.delete(item.id).now()
+
+    then:
+    deleted == item
 
   }
 }
