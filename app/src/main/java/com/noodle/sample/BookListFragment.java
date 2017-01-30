@@ -1,6 +1,8 @@
 package com.noodle.sample;
 
+import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +15,8 @@ import com.noodle.sample.model.Book;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ import java.util.List;
 /**
  *
  */
+@OptionsMenu(R.menu.fragment_book_list)
 @EFragment(R.layout.fragment_book_list)
 public class BookListFragment extends Fragment {
 
@@ -29,11 +34,35 @@ public class BookListFragment extends Fragment {
 
   @ViewById
   RecyclerView recyclerView;
+  BookListAdapter adapter;
 
   @AfterViews
   void afterViews() {
     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-    recyclerView.setAdapter(new BookListAdapter(bookManager.getBooks()));
+    adapter = new BookListAdapter(bookManager.getBooks());
+    recyclerView.setAdapter(adapter);
+
+    bookManager.setListener(new BookManager.Listener() {
+      @Override
+      public void onBooksChanged() {
+        adapter.setItems(bookManager.getBooks());
+      }
+    });
+  }
+
+  @OptionsItem(R.id.clear)
+  void onClear() {
+    new AlertDialog.Builder(getActivity())
+        .setTitle("Are you sure?")
+        .setMessage("All items will be removed")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(final DialogInterface dialog, final int which) {
+            bookManager.clear();
+          }
+        })
+        .setNegativeButton("No", null)
+        .show();
   }
 
   class BookListAdapter extends RecyclerView.Adapter<BookViewHolder> {
@@ -61,6 +90,11 @@ public class BookListFragment extends Fragment {
     @Override
     public int getItemCount() {
       return bookList.size();
+    }
+
+    void setItems(final List<Book> items) {
+      this.bookList = new ArrayList<>(items);
+      notifyDataSetChanged();
     }
   }
 

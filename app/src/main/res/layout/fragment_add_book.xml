@@ -24,6 +24,7 @@
     android:hint="book title here"
     android:maxLines="3"
     android:maxLength="255"
+    android:inputType="textCapWords"
     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
     />
 
@@ -42,6 +43,7 @@
     android:layout_margin="4dp"
     android:hint="author name here"
     android:maxLength="255"
+    android:inputType="textCapWords"
     android:maxLines="2"
     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
     />
