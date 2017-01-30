@@ -140,6 +140,10 @@ public class ByteBufferStorage implements Storage {
     return Collections.unmodifiableList(keys);
   }
 
+  public TreeMap<BytesWrapper, Integer> getTreeMapIndex() {
+    return treeMapIndex;
+  }
+
   private Record getRecordAt(final int position) {
     buffer.position(position);
     final int keyLength = buffer.getInt();

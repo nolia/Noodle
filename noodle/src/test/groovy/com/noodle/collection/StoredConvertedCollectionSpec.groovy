@@ -49,7 +49,6 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
     and:
     data == collection.get(saved.id).now()
-
   }
 
   def "should get all items that were put previously"() {
@@ -99,6 +98,5 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     for (int i = 0; i < 3; i++) {
       filtered.contains(items.get(i))
     }
-
   }
 }
