@@ -29,15 +29,15 @@ Noodle noodle = new Noodle(context)
 Note: no annotations needed.
 
 ### Basic operations
-Noodle allows you to *put*, *delete*  and *get* (by id) your objects.
+Noodle allows you to *list*, *put*, *delete*  and *get* (by id) your objects.
 
 ```java
-collection = noodle.collection(Book.class);
+collection = noodle.collectionOf(Book.class);
 
 Book book = new Book("I Robot", "Isaac Asimov");
 
 // Get all.
-collection.all().now(); // Returns List<Book>.
+List<Book> list = collection.all().now();
 
 collection.put(book).now();
 // Now, book object has updated id.
@@ -52,4 +52,12 @@ collection.delete(book.id).now();
 ```
 
 ### Storage
-Noodle stores all the data as byte arrays. By default it converts classes using Gson.
+Noodle stores all the data as byte arrays. By default it converts classes using Gson. But you can bring your own converter and store objects the way you want.
+
+
+### Still to be done:
+ * Id generation strategy
+ * Simple annotation processing for entities ids
+ * Rx support
+ * Indexes (maybe)
+ * Documentation :)
