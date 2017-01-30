@@ -39,6 +39,14 @@ public class StoredConvertedCollection<T> implements Collection<T> {
     this.description = description;
     this.converter = converter;
     this.storage = storage;
+
+    for (byte[] key : getAllCollectionKeys()) {
+      final String idStr = new String(key).split(":")[1];
+      final Long id = Long.valueOf(idStr);
+      if (id != null && sequenceId < id) {
+        sequenceId = id;
+      }
+    }
   }
 
 
@@ -110,7 +118,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   private ArrayList<T> findItemsWith(final Predicate<T> predicate) {
-    final List<byte[]> keys = storage.prefixedWith(String.format(Locale.US, "%s", clazz.getCanonicalName()).getBytes());
+    final List<byte[]> keys = getAllCollectionKeys();
     final ArrayList<T> result = new ArrayList<>();
     for (int i = 0; i < keys.size(); i++) {
       final Record record = storage.get(keys.get(i));
@@ -120,6 +128,10 @@ public class StoredConvertedCollection<T> implements Collection<T> {
       }
     }
     return result;
+  }
+
+  private List<byte[]> getAllCollectionKeys() {
+    return storage.prefixedWith(String.format(Locale.US, "%s", clazz.getCanonicalName()).getBytes());
   }
 
   private Record toRecord(final long id, final T t) {
