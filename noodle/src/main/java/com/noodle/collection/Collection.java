@@ -18,7 +18,7 @@ public interface Collection<T> {
 
   Result<List<T>> all();
 
-  Result<List<T>> filter(Predicate<T> t);
+  Result<List<T>> filter(Predicate<T> predicate);
 
   interface Predicate<T> {
     boolean satisfy(T t);

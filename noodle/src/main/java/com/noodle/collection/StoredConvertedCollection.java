@@ -24,6 +24,13 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   long sequenceId = 0;
 
+  final Predicate<T> every = new Predicate<T>() {
+    @Override
+    public boolean satisfy(final T t) {
+      return true;
+    }
+  };
+
   public StoredConvertedCollection(final Class<T> clazz,
                                    final Description<T> description,
                                    final Converter converter,
@@ -87,21 +94,32 @@ public class StoredConvertedCollection<T> implements Collection<T> {
     return new SimpleResult<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
-        final List<byte[]> keys = storage.prefixedWith(String.format(Locale.US, "%s", clazz.getCanonicalName()).getBytes());
-        final ArrayList<T> result = new ArrayList<>();
-        for (int i = 0; i < keys.size(); i++) {
-          final Record record = storage.get(keys.get(i));
-          result.add(converter.fromBytes(record.getData(), clazz));
-        }
-
-        return result;
+        return findItemsWith(every);
       }
     });
   }
 
   @Override
-  public Result<List<T>> filter(final Predicate<T> t) {
-    return null;
+  public Result<List<T>> filter(final Predicate<T> predicate) {
+    return new SimpleResult<>(new Callable<List<T>>() {
+      @Override
+      public List<T> call() throws Exception {
+        return findItemsWith(predicate);
+      }
+    });
+  }
+
+  private ArrayList<T> findItemsWith(final Predicate<T> predicate) {
+    final List<byte[]> keys = storage.prefixedWith(String.format(Locale.US, "%s", clazz.getCanonicalName()).getBytes());
+    final ArrayList<T> result = new ArrayList<>();
+    for (int i = 0; i < keys.size(); i++) {
+      final Record record = storage.get(keys.get(i));
+      final T t = converter.fromBytes(record.getData(), clazz);
+      if (predicate.satisfy(t)) {
+        result.add(t);
+      }
+    }
+    return result;
   }
 
   private Record toRecord(final long id, final T t) {

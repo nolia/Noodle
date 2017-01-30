@@ -73,6 +73,32 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
     then:
     deleted == item
+  }
+
+  def "should filter items"() {
+    given:
+    def items = [
+        new Data(name: "ab"),
+        new Data(name: "abc"),
+        new Data(name: "abc1"),
+        new Data(name: "defg")
+    ]
+
+    and:
+    items.each {
+      collection.put(it).now()
+    }
+
+    when:
+    def filtered = collection.filter(
+        {it.name.startsWith("ab")} as Collection.Predicate<Data>
+    ).now()
+
+    then:
+    filtered.size() == 3
+    for (int i = 0; i < 3; i++) {
+      filtered.contains(items.get(i))
+    }
 
   }
 }
