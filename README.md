@@ -1,4 +1,6 @@
 # Noodle
+[![Build Status](https://travis-ci.org/nolia/Noodle.svg?branch=master)](https://travis-ci.org/nolia/Noodle)
+
 
 Noodle is a simple object storage for Android.
 
