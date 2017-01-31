@@ -5,6 +5,10 @@ package com.noodle.util;
  */
 public class Data {
 
+  // Used in tests.
+  @SuppressWarnings("unused")
+  public final long finalId = 0;
+
   public long id;
 
   public String name;

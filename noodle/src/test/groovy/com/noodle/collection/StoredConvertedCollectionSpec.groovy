@@ -7,9 +7,6 @@ import com.noodle.storage.FileMappedBufferStorage
 import com.noodle.util.Data
 import org.robospock.RoboSpecification
 
-/**
- *
- */
 class StoredConvertedCollectionSpec extends RoboSpecification {
 
   private Description<Data> description
@@ -35,6 +32,11 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
   void cleanup() {
     file.delete()
+  }
+
+  def "should return null when item not found"() {
+    expect:
+    collection.get(345).now() == null
   }
 
   def "add and get some item"() {

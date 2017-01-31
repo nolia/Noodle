@@ -1,21 +1,18 @@
 package com.noodle.description;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
- * Knows how to get id for an item.
+ * Knows how to get and set id of an item.
  */
 public class Description<T> {
 
+  final GetIdOperator<T> getIdOperator;
+  final SetIdOperator<T> setIdOperator;
 
-  private final Class<T> clazz;
-  private final GetIdOperator<T> getIdOperator;
-  private final SetIdOperator<T> setIdOperator;
-
-  public Description(final Class<T> clazz,
-                     final GetIdOperator<T> getIdOperator,
+  public Description(final GetIdOperator<T> getIdOperator,
                      final SetIdOperator<T> setIdOperator) {
-    this.clazz = clazz;
     this.getIdOperator = getIdOperator;
     this.setIdOperator = setIdOperator;
   }
@@ -60,7 +57,7 @@ public class Description<T> {
     }
 
     public Description<T> build() {
-      return new Description<>(clazz, getIdOperator, setIdOperator);
+      return new Description<>(getIdOperator, setIdOperator);
     }
   }
 
@@ -72,16 +69,25 @@ public class Description<T> {
     void setId(T t, long id);
   }
 
-  private static class ReflectionIdField<T> implements GetIdOperator<T>, SetIdOperator<T> {
+  static class ReflectionIdField<T> implements GetIdOperator<T>, SetIdOperator<T> {
 
-    private Class<T> clazz;
     private Field field;
 
     public ReflectionIdField(final Class<T> clazz, final String fieldName) {
-      this.clazz = clazz;
       try {
         field = clazz.getField(fieldName);
 
+        if (Modifier.isFinal(field.getModifiers())) {
+          throw new RuntimeException("id field cannot be final!");
+        }
+
+        if (field.getType() != Long.TYPE && field.getType() != Long.class) {
+          throw new RuntimeException("Field type should be long or Long");
+        }
+
+        if (!field.isAccessible()) {
+          field.setAccessible(true);
+        }
       } catch (NoSuchFieldException e) {
         throw new RuntimeException(e);
       }

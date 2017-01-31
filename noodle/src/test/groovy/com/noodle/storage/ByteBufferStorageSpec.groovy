@@ -9,6 +9,7 @@ import spock.lang.Unroll
 class ByteBufferStorageSpec extends RoboSpecification {
 
   private ByteBufferStorage storage
+  private Random random = new Random(1134)
 
   static Record r1 = new Record("1".getBytes(), "a".getBytes()),
                 r2 = new Record("2".getBytes(), "b".getBytes()),
@@ -52,7 +53,26 @@ class ByteBufferStorageSpec extends RoboSpecification {
 
     storage.treeMapIndex.size() == 1
     storage.lastPosition == newItem.size()
+  }
 
+  def "put with same bytes should get on same place"() {
+    given:
+    def item = new Record("123".getBytes(), "abc".getBytes())
+    storage.put(item)
+    def wrapper = new BytesWrapper(item.key)
+    def pos = storage.treeMapIndex.get(wrapper)
+
+    // Put other arbitrary items.
+    [r1, r2, r3].each {storage.put(it)}
+
+    when:
+    item.data = "cba".getBytes()
+
+    and:
+    storage.put(item)
+
+    then:
+    storage.treeMapIndex.get(wrapper) == pos
   }
 
   def "remove one"() {
@@ -74,9 +94,7 @@ class ByteBufferStorageSpec extends RoboSpecification {
   @Unroll
   def "remove at #position"(String position, Record toRemove) {
     when:
-    storage.put(r1)
-    storage.put(r2)
-    storage.put(r3)
+    [r1, r2, r3].each {storage.put(it)}
 
     and:
     storage.remove(toRemove.key)
@@ -105,5 +123,64 @@ class ByteBufferStorageSpec extends RoboSpecification {
 
     then:
     found == item
+  }
+
+  def "remove unknown item should return null"() {
+    expect:
+    storage.remove(r1.key) == null
+  }
+
+  def "should iterate with prefixedWith method"() {
+    given:
+    def items = [
+        new Record("abaa".getBytes(), "1".getBytes()),
+        new Record("abba".getBytes(), "2".getBytes()),
+        new Record("abbc".getBytes(), "3".getBytes()),
+        new Record("abbb".getBytes(), "4".getBytes()),
+        new Record("ddde".getBytes(), "5".getBytes())
+    ]
+    items.each {storage.put(it)}
+
+    when:
+    def list = storage.prefixedWith("ab".getBytes())
+
+    then:
+    list.size() == 4
+    list.containsAll items.subList(0, 4)*.key
+  }
+
+  def "add more records should grow the buffer"() {
+    when:
+    // 10 Kb of data.
+    10.times {
+      def key = it.toString().getBytes()
+      byte[] data = new byte[1024]
+      random.nextBytes(data)
+      storage.put(new Record(key, data))
+    }
+
+    then:
+    storage.buffer.limit() > 10 * 1024
+  }
+
+  def "should put and get 1000 items"() {
+    given:
+    def records = []
+    1000.times {
+      def key = it.toString().getBytes()
+      byte[] data = new byte[128]
+      random.nextBytes(data)
+      records << new Record(key, data)
+    }
+
+    when:
+    records.each {
+      storage.put(it)
+    }
+
+    then:
+    records.each { Record r ->
+      storage.get(r.key) == r
+    }
   }
 }

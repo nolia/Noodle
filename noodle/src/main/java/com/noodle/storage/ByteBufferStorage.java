@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.TreeMap;
 
 /**
- *
+ * Storage, backed by ByteBuffer.
  */
-
 public class ByteBufferStorage implements Storage {
 
   // 1 kb
@@ -17,7 +16,7 @@ public class ByteBufferStorage implements Storage {
 
   ByteBuffer buffer = ByteBuffer.allocate(INITIAL_SIZE);
 
-  protected TreeMap<BytesWrapper, Integer> treeMapIndex = new TreeMap<>();
+  TreeMap<BytesWrapper, Integer> treeMapIndex = new TreeMap<>();
   int lastPosition = 0;
 
   @Override
