@@ -101,6 +101,5 @@ class SimpleResultSpec extends RoboSpecification {
     then:
     0 * callback.onReady(_)
     1 * callback.onError(_ as RuntimeException)
-
   }
 }

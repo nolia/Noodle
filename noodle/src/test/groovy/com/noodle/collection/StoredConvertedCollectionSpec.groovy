@@ -99,4 +99,23 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
       filtered.contains(items.get(i))
     }
   }
+
+  def "should pick up last stored id"() {
+    given:
+    def items = []
+    5.times {
+      items << new Data(name: "a" * it)
+    }
+
+    items.each {collection.put(it).now()}
+
+    when:
+    def newCollection = new StoredConvertedCollection<Data>(Data,
+        description,
+        converter,
+        storage)
+
+    then:
+    newCollection.sequenceId == 5
+  }
 }
