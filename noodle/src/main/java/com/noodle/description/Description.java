@@ -4,7 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 /**
- * Knows how to get and set id of an item.
+ * Knows how to get and set id of an item.<br/>
+ * To construct, use builder with {@link #of(Class)} method.
  */
 public class Description<T> {
 
@@ -17,18 +18,42 @@ public class Description<T> {
     this.setIdOperator = setIdOperator;
   }
 
+  /**
+   * Creates new {@link DescriptionBuilder} to create description of the item.
+   *
+   * @param clazz type of entities
+   * @param <T> type of entities
+   * @return new {@link DescriptionBuilder}
+   */
   public static <T> DescriptionBuilder<T> of(Class<T> clazz) {
     return new DescriptionBuilder<>(clazz);
   }
 
+  /**
+   * Uses {@link GetIdOperator} to get id of the item.
+   *
+   * @param t item to get id of
+   * @return item id, or 0 if not present.
+   */
   public long idOfItem(final T t) {
     return getIdOperator.getId(t);
   }
 
+  /**
+   * Uses {@link SetIdOperator} to set id of the item.
+   *
+   * @param t entity
+   * @param id its id
+   */
   public void setItemId(final T t, final long id) {
     setIdOperator.setId(t, id);
   }
 
+  /**
+   * Helper class to build Descriptions.
+   *
+   * @param <T> entity type
+   */
   public static class DescriptionBuilder<T> {
 
     private final Class<T> clazz;
@@ -39,16 +64,35 @@ public class Description<T> {
       this.clazz = clazz;
     }
 
+    /**
+     * Changes getIdOperator.
+     *
+     * @param operator new {@link GetIdOperator} to use
+     * @return this builder instance
+     */
     public DescriptionBuilder<T> withGetIdOperator(GetIdOperator<T> operator) {
       this.getIdOperator = operator;
       return this;
     }
 
+    /**
+     * Changes setIdOperator.
+     *
+     * @param operator new {@link SetIdOperator} to use
+     * @return this builder instance
+     */
     public DescriptionBuilder<T> withSetIdOperator(SetIdOperator<T> operator) {
       this.setIdOperator = operator;
       return this;
     }
 
+    /**
+     * Sets getId and setId operators to use reflection to access id of an entity.<br>
+     * <b>Note: id field must be of the type Long or long and may not be final.</b>
+     *
+     * @param fieldName name of the id field
+     * @return this builder instance
+     */
     public  DescriptionBuilder<T> withIdField(String fieldName) {
       final ReflectionIdField<T> reflectionIdField = new ReflectionIdField<>(clazz, fieldName);
       this.getIdOperator = reflectionIdField;
@@ -56,15 +100,39 @@ public class Description<T> {
       return this;
     }
 
+    /**
+     * Creates new {@link Description} object, based on this item.
+     * Note, that getId and setId operators must be presetn.
+     *
+     * @return new description based on this builder
+     */
     public Description<T> build() {
+      if (getIdOperator == null) {
+        throw new RuntimeException("Get id operator may not be null");
+      }
+
+      if (setIdOperator == null) {
+        throw new RuntimeException("Set id operator may not be null");
+      }
+
       return new Description<>(getIdOperator, setIdOperator);
     }
   }
 
+  /**
+   * Function to get the id of item
+   *
+   * @param <T> item type
+   */
   public interface GetIdOperator<T> {
     long getId(T t);
   }
 
+  /**
+   * Function to set the id of item
+   *
+   * @param <T> item type
+   */
   public interface SetIdOperator<T> {
     void setId(T t, long id);
   }

@@ -12,9 +12,8 @@ import java.util.Locale;
 import java.util.concurrent.Callable;
 
 /**
- *
+ * Primary {@link Collection} implementation.
  */
-
 public class StoredConvertedCollection<T> implements Collection<T> {
 
   final Class<T> clazz;
@@ -26,7 +25,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   final Predicate<T> every = new Predicate<T>() {
     @Override
-    public boolean satisfy(final T t) {
+    public boolean test(final T t) {
       return true;
     }
   };
@@ -123,7 +122,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
     for (int i = 0; i < keys.size(); i++) {
       final Record record = storage.get(keys.get(i));
       final T t = converter.fromBytes(record.getData(), clazz);
-      if (predicate.satisfy(t)) {
+      if (predicate.test(t)) {
         result.add(t);
       }
     }

@@ -2,10 +2,17 @@ package com.noodle.description
 
 import com.noodle.util.Data
 import org.robospock.RoboSpecification
+import spock.lang.Shared
 
 class DescriptionSpec extends RoboSpecification {
 
   private Data data
+
+  @Shared
+  Description.GetIdOperator defaultGetId = { t -> t.id } as Description.GetIdOperator
+
+  @Shared
+  Description.SetIdOperator defaultSetId = { t, id -> t.id = id } as Description.SetIdOperator
 
   void setup() {
     data = new Data(name: 'Data!')
@@ -14,7 +21,10 @@ class DescriptionSpec extends RoboSpecification {
   def "should use get id operator"() {
     given:
     def getIdOperator = Mock(Description.GetIdOperator)
-    def description = Description.of(Data).withGetIdOperator(getIdOperator).build()
+    def description = Description.of(Data)
+        .withGetIdOperator(getIdOperator)
+        .withSetIdOperator(defaultSetId)
+        .build()
 
     when:
     description.idOfItem(data)
@@ -27,6 +37,7 @@ class DescriptionSpec extends RoboSpecification {
     given:
     def setIdOperator = Mock(Description.SetIdOperator)
     def description = Description.of(Data)
+        .withGetIdOperator(defaultGetId)
         .withSetIdOperator(setIdOperator).build()
 
     when:
@@ -69,5 +80,23 @@ class DescriptionSpec extends RoboSpecification {
 
     then:
     thrown RuntimeException
+  }
+
+  def "should handle building with or without id operators"(getId, setId) {
+    when:
+    Description.of(Data)
+        .withGetIdOperator(getId)
+        .withSetIdOperator(setId)
+        .build()
+
+    then:
+    thrown RuntimeException
+
+    where:
+    getId        | setId
+    null         | defaultSetId
+    defaultGetId | null
+    null         | null
+
   }
 }

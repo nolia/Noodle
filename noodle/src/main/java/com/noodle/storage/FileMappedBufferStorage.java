@@ -6,9 +6,9 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
 /**
- *
+ * Storage implementation that extends {@link ByteBufferStorage}
+ * but is actually backed by buffer mapped to a file.
  */
-
 public class FileMappedBufferStorage extends ByteBufferStorage {
 
   private RandomAccessFile randomAccessFile;

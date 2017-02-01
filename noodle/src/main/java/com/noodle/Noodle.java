@@ -15,7 +15,16 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * @author Nikolay Soroka - Stanfy (http://stanfy.com)
+ * Noodle is a lightweight super-simple persistence framework.
+ * It does not have relations, columns, thread contained objects and indexes.
+ * All data is accessed via {@link Collection} classes. All types of objects
+ * that you want to store must be declared at construction time.
+ * <br/>
+ * Noodle stores all the data as byte arrays, and converts them to Java objects and
+ * vice versa using {@link Converter} interface. The default converter is {@link GsonConverter},
+ * but you can implement your own.
+ * <br/>
+ * Each stored entity has kind and id, which is represented as long primitive.
  */
 public class Noodle {
 
@@ -28,11 +37,23 @@ public class Noodle {
   final HashMap<String, Description> descriptionHashMap = new HashMap<>();
   final Converter converter;
 
+  /**
+   * Create new Noodle with default settings.
+   *
+   * @param context should probably be application context
+   */
   public Noodle(final Context context) {
     this(context, context.getFilesDir().getAbsolutePath() + File.separator + "data.noodle",
         new GsonConverter(new Gson()));
   }
 
+  /**
+   * Creates new Noodle with specified parameters.
+   *
+   * @param context application context
+   * @param path path to the data file
+   * @param converter which converter to use
+   */
   public Noodle(final Context context, final String path, final Converter converter) {
     this.context = context;
     this.path = path;
@@ -46,11 +67,29 @@ public class Noodle {
     }
   }
 
+  /**
+   * Registers the type of objects which can be stored in this Noodle storage.
+   * If there was previously registered type, rewrites its description with new one.
+   *
+   * @param type type of objects to store
+   * @param description description of the type
+   * @param <T> generic type, to be statically type-safe
+   * @return this Noodle instance
+   */
   public <T> Noodle registerType(final Class<T> type, final Description<T> description) {
     descriptionHashMap.put(type.getCanonicalName(), description);
     return this;
   }
 
+  /**
+   * Returns the collection of the given type.<br/>
+   * <b>Note: type description have to be already registered with
+   * {@link #registerType(Class, Description)}.</b>
+   *
+   * @param type type of objects to store
+   * @param <T> generic type, to be statically type-safe
+   * @return collection of the given type.
+   */
   @SuppressWarnings("unchecked")
   public <T> Collection<T> collectionOf(final Class<T> type) {
     final String kind = type.getCanonicalName();

@@ -4,9 +4,10 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
- *
+ * Represents and entity in the Storage.
+ * Consists of byte array key and data.
+ * Key is usually represented as <pre>kind:id</pre>
  */
-
 public class Record {
 
   byte[] key;
@@ -48,7 +49,6 @@ public class Record {
     Record record = (Record) o;
 
     return Arrays.equals(key, record.key) && Arrays.equals(data, record.data);
-
   }
 
   @Override

@@ -3,9 +3,10 @@ package com.noodle.storage;
 import java.util.Arrays;
 
 /**
- *
+ * Wraps a byte[] array, adding to it {@link Comparable} and {@link Object#hashCode()} and
+ * {@link Object#equals(Object)} implementations. <br/>
+ * Primary is used by {@link Storage} to serve as byte array keys in index maps.
  */
-
 public class BytesWrapper implements Comparable<BytesWrapper> {
 
   final byte[] bytes;

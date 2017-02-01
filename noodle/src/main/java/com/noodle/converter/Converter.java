@@ -1,9 +1,10 @@
 package com.noodle.converter;
 
 /**
- *
+ * Converts between byte[] and actual Java objects and
+ * vice versa.
+ * @see GsonConverter
  */
-
 public interface Converter {
 
   <T> byte[] toBytes(T t);

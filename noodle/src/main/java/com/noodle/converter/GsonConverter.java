@@ -3,7 +3,7 @@ package com.noodle.converter;
 import com.google.gson.Gson;
 
 /**
- *
+ * {@link Converter} based on {@link Gson}.
  */
 public class GsonConverter implements Converter {
 
@@ -15,7 +15,6 @@ public class GsonConverter implements Converter {
 
   @Override
   public <T> byte[] toBytes(final T t) {
-    // TODO Reuse byte buffer for writing objects.
     return gson.toJson(t).getBytes();
   }
 
