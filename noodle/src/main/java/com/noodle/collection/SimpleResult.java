@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 /**
- *
+ * Result implementation, bases on Callable instance.
  */
 class SimpleResult<K> implements Result<K> {
 

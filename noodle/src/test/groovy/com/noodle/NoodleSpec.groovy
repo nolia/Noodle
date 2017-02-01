@@ -46,4 +46,16 @@ class NoodleSpec extends RoboSpecification {
     then:
     thrown RuntimeException
   }
+
+  def "get collection for second time should return same collection"() {
+    given:
+    noodle.registerType(Data, Description.of(Data).withIdField("id").build())
+    def collection = noodle.collectionOf(Data)
+
+    when:
+    def secondCollection = noodle.collectionOf(Data)
+
+    then:
+    secondCollection == collection
+  }
 }
