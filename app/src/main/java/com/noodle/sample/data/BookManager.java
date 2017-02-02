@@ -1,34 +1,20 @@
-package com.noodle.sample;
+package com.noodle.sample.data;
 
 import android.content.Context;
 
 import com.noodle.Noodle;
 import com.noodle.collection.Collection;
 import com.noodle.description.Description;
-import com.noodle.sample.model.Book;
-
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
 
 import java.util.List;
 
-/**
- *
- */
-@EBean(scope = EBean.Scope.Singleton)
 public class BookManager {
 
-  @RootContext
-  Context context;
-
-  Noodle noodle;
-
+  private Noodle noodle;
   private Listener listener;
 
-  @AfterInject
-  void afterInject() {
-    noodle = new Noodle(context)
+  public BookManager(final Context context) {
+    this.noodle = new Noodle(context)
         .registerType(Book.class, Description.of(Book.class).withIdField("id").build());
   }
 

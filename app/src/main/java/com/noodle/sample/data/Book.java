@@ -1,4 +1,4 @@
-package com.noodle.sample.model;
+package com.noodle.sample.data;
 
 public class Book {
 

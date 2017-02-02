@@ -1,45 +1,61 @@
-package com.noodle.sample;
+package com.noodle.sample.ui;
 
 import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.noodle.sample.model.Book;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.ViewById;
+import com.noodle.sample.NoodleApp;
+import com.noodle.sample.R;
+import com.noodle.sample.data.Book;
+import com.noodle.sample.data.BookManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- */
-@OptionsMenu(R.menu.fragment_book_list)
-@EFragment(R.layout.fragment_book_list)
 public class BookListFragment extends Fragment {
 
-  @Bean
   BookManager bookManager;
-
-  @ViewById
-  RecyclerView recyclerView;
-
   BookListAdapter adapter;
 
-  @AfterViews
-  void afterViews() {
+  RecyclerView recyclerView;
+
+  public BookListFragment() {
+    setHasOptionsMenu(true);
+  }
+
+  @Override
+  public void onCreate(@Nullable final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    bookManager = ((NoodleApp) getActivity().getApplication()).getBookManager();
+  }
+
+  @Override
+  public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+    inflater.inflate(R.menu.fragment_book_list, menu);
+  }
+
+  @Nullable
+  @Override
+  public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+    return inflater.inflate(R.layout.fragment_book_list, container, false);
+  }
+
+  @Override
+  public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
+    recyclerView = ((RecyclerView) view.findViewById(R.id.recyclerView));
     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
     adapter = new BookListAdapter(bookManager.getBooks());
     recyclerView.setAdapter(adapter);
 
@@ -51,7 +67,14 @@ public class BookListFragment extends Fragment {
     });
   }
 
-  @OptionsItem(R.id.clear)
+  @Override
+  public boolean onOptionsItemSelected(final MenuItem item) {
+    if (item.getItemId() == R.id.clear) {
+      onClear();
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
   void onClear() {
     new AlertDialog.Builder(getActivity())
         .setTitle("Are you sure?")
