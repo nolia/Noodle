@@ -1,9 +1,32 @@
 # Noodle
 [![Build Status](https://travis-ci.org/nolia/Noodle.svg?branch=master)](https://travis-ci.org/nolia/Noodle)
 
+[![](https://jitpack.io/v/nolia/Noodle.svg)](https://jitpack.io/#nolia/Noodle)
 
 Noodle is a simple object storage for Android.
 
+### Download
+
+Get it from JitPack.
+
+Step 1. Add it in your root build.gradle at the end of repositories:
+```
+allprojects {
+  repositories {
+   ...
+    maven { url 'https://jitpack.io' }
+  }
+}
+```
+
+Step 2. Add the dependency
+```
+dependencies {
+  compile 'com.github.nolia:Noodle:v0.1'
+}
+```
+
+### Usage
 
 It's really simple: no schema, no relations, no consistency rules, no thread-contained objects.
 And it's also easy to use, create Noodle instance and register types you want to store:
