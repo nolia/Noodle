@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,6 +45,20 @@ public class BookListFragment extends Fragment {
   @Override
   public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
     inflater.inflate(R.menu.fragment_book_list, menu);
+    final SearchView searchView = (SearchView) menu.findItem(R.id.seach).getActionView();
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+      @Override
+      public boolean onQueryTextSubmit(final String query) {
+        filterItems(query);
+        return false;
+      }
+
+      @Override
+      public boolean onQueryTextChange(final String newText) {
+        filterItems(newText);
+        return false;
+      }
+    });
   }
 
   @Nullable
@@ -73,6 +89,15 @@ public class BookListFragment extends Fragment {
       onClear();
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  private void filterItems(final String query) {
+    if (TextUtils.isEmpty(query)) {
+      adapter.setItems(bookManager.getBooks());
+      return;
+    }
+
+    adapter.setItems(bookManager.search(query));
   }
 
   void onClear() {

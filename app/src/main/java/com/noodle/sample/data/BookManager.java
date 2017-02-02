@@ -57,6 +57,17 @@ public class BookManager {
     }
   }
 
+  public List<Book> search(final String query) {
+    return collection.filter(new Collection.Predicate<Book>() {
+      @Override
+      public boolean test(final Book book) {
+        return book.title.contains(query)
+            || book.authorName.contains(query);
+
+      }
+    }).now();
+  }
+
   public interface Listener {
     void onBooksChanged();
   }
