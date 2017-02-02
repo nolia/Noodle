@@ -77,15 +77,15 @@ public class BookListFragment extends Fragment {
 
   void onClear() {
     new AlertDialog.Builder(getActivity())
-        .setTitle("Are you sure?")
-        .setMessage("All items will be removed")
-        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        .setTitle(R.string.remove_all_title)
+        .setMessage(R.string.remove_all_message)
+        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(final DialogInterface dialog, final int which) {
             bookManager.clear();
           }
         })
-        .setNegativeButton("No", null)
+        .setNegativeButton(R.string.no, null)
         .show();
   }
 
@@ -107,8 +107,22 @@ public class BookListFragment extends Fragment {
 
     @Override
     public void onBindViewHolder(final BookViewHolder holder, final int position) {
-      holder.bookTitle.setText(bookList.get(position).title);
-      holder.bookAuthor.setText(bookList.get(position).authorName);
+      final Book book = bookList.get(position);
+
+      holder.bookTitle.setText(book.title);
+      holder.bookAuthor.setText(book.authorName);
+
+      holder.itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+          final EditBookFragment editFragment = new EditBookFragment();
+          final Bundle args = new Bundle();
+          args.putLong(EditBookFragment.ARG_BOOK_ID, book.id);
+          editFragment.setArguments(args);
+
+          editFragment.show(getFragmentManager(), "edit_book");
+        }
+      });
     }
 
     @Override

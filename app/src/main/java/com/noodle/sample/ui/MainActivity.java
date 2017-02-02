@@ -13,12 +13,13 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(@Nullable final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    setTitle(R.string.main_title);
 
     findViewById(R.id.addBook).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(final View v) {
-        final AddBookFragment addBookFragment = new AddBookFragment();
-        addBookFragment.show(getSupportFragmentManager(), "add_book");
+        final EditBookFragment editBookFragment = new EditBookFragment();
+        editBookFragment.show(getSupportFragmentManager(), "add_book");
       }
     });
   }

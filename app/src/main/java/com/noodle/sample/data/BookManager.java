@@ -12,10 +12,13 @@ public class BookManager {
 
   private Noodle noodle;
   private Listener listener;
+  private Collection<Book> collection;
 
   public BookManager(final Context context) {
-    this.noodle = new Noodle(context)
+    noodle = new Noodle(context)
         .registerType(Book.class, Description.of(Book.class).withIdField("id").build());
+
+    collection = noodle.collectionOf(Book.class);
   }
 
   public List<Book> getBooks() {
@@ -23,7 +26,7 @@ public class BookManager {
   }
 
   public void addBook(Book book) {
-    noodle.collectionOf(Book.class).put(book).now();
+    collection.put(book).now();
     if (listener != null) {
       listener.onBooksChanged();
     }
@@ -34,11 +37,21 @@ public class BookManager {
   }
 
   public void clear() {
-    final Collection<Book> collection = noodle.collectionOf(Book.class);
     for (Book book : collection.all().now()) {
       collection.delete(book.id).now();
     }
 
+    if (listener != null) {
+      listener.onBooksChanged();
+    }
+  }
+
+  public Book getBook(final long id) {
+    return collection.get(id).now();
+  }
+
+  public void deleteBook(final Book book) {
+    collection.delete(book.id).now();
     if (listener != null) {
       listener.onBooksChanged();
     }

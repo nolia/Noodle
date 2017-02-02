@@ -3,17 +3,18 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:minWidth="300dp"
+  xmlns:tools="http://schemas.android.com/tools"
   android:minHeight="200dp"
+  android:minWidth="300dp"
   android:orientation="vertical"
   android:padding="8dp">
 
   <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-    android:text="Title:"
     android:layout_margin="4dp"
+    android:text="@string/label_title"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
     />
 
   <EditText
@@ -21,19 +22,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:hint="book title here"
-    android:maxLines="3"
-    android:maxLength="255"
+    android:hint="@string/hint_book_title"
     android:inputType="textCapWords"
+    android:maxLength="255"
+    android:maxLines="3"
     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
     />
 
   <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-    android:text="Author:"
     android:layout_margin="4dp"
+    android:text="@string/label_author"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
     />
 
   <EditText
@@ -41,20 +42,40 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:hint="author name here"
-    android:maxLength="255"
+    android:hint="@string/hint_author_name"
     android:inputType="textCapWords"
+    android:maxLength="255"
     android:maxLines="2"
     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
     />
 
-  <Button
-    android:id="@+id/buttonSave"
-    android:layout_margin="8dp"
+  <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
-    android:text="Save"
-    />
+    android:layout_margin="8dp"
+    >
+
+    <Button
+      android:id="@+id/buttonDelete"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="left"
+      android:text="@string/delete"
+      tools:visibility="visible"
+      android:visibility="gone"
+      />
+
+    <Button
+      android:id="@+id/buttonSave"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="4dp"
+      android:layout_gravity="right"
+      android:text="@string/save"
+      />
+
+  </LinearLayout>
+
 
 </LinearLayout>

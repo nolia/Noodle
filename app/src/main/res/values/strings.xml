@@ -1,3 +1,17 @@
 <resources>
   <string name="app_name">Noodle</string>
+  <string name="yes">Yes</string>
+  <string name="no">No</string>
+  <string name="main_title">Books</string>
+  <string name="clear">Clear</string>
+  <string name="remove_all_title">Are you sure?</string>
+  <string name="remove_all_message">All items will be removed</string>
+  <string name="add_book">Add Book</string>
+  <string name="edit_book">Edit Book</string>
+  <string name="delete">Delete</string>
+  <string name="save">Save</string>
+  <string name="label_title">Title:</string>
+  <string name="label_author">Author:</string>
+  <string name="hint_book_title">book title here</string>
+  <string name="hint_author_name">author name here</string>
 </resources>
