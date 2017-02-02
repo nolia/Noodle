@@ -34,6 +34,7 @@ public class BookListFragment extends Fragment {
 
   @ViewById
   RecyclerView recyclerView;
+
   BookListAdapter adapter;
 
   @AfterViews

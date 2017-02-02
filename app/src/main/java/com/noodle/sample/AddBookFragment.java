@@ -17,7 +17,6 @@ import org.androidannotations.annotations.ViewById;
 /**
  *
  */
-
 @EFragment(R.layout.fragment_add_book)
 public class AddBookFragment extends AppCompatDialogFragment {
 
@@ -32,17 +31,13 @@ public class AddBookFragment extends AppCompatDialogFragment {
 
   @Click(R.id.buttonSave)
   void onSaveClicked() {
-    final Book book = new Book();
     final String title = inputTitle.getText().toString().trim();
     final String author = inputAuthor.getText().toString().trim();
     if (TextUtils.isEmpty(title) || TextUtils.isEmpty(author)) {
       return;
     }
 
-    book.title = title;
-    book.authorName = author;
-
-    bookManager.addBook(book);
+    bookManager.addBook(new Book(title, author));
     dismiss();
   }
 
