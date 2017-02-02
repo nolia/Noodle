@@ -1,12 +1,17 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'groovyx.grooid.groovy-android'
+
+// Publishing config for JitPack.
+group='com.github.nolia'
+version='0.1'
 
 android {
   compileSdkVersion 25
   buildToolsVersion "25.0.2"
 
   defaultConfig {
-    minSdkVersion 14
+    minSdkVersion 9
     targetSdkVersion 25
     versionCode 1
     versionName "1.0"
@@ -20,11 +25,9 @@ android {
 }
 
 dependencies {
-  compile fileTree(dir: 'libs', include: ['*.jar'])
-  testCompile 'junit:junit:4.12'
-
   compile 'com.google.code.gson:gson:2.6.2'
 
+  testCompile 'junit:junit:4.12'
   testCompile 'org.robolectric:robolectric:3.0'
   testCompile 'org.robospock:robospock:1.0.0'
   testCompile 'cglib:cglib-nodep:3.2.0'
