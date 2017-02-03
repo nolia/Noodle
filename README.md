@@ -1,4 +1,4 @@
-# Noodle
+# <img src="./noodles.svg" alt="noodles" style="width: 31px;"/> Noodle
 [![Build Status](https://travis-ci.org/nolia/Noodle.svg?branch=master)](https://travis-ci.org/nolia/Noodle)   [![](https://jitpack.io/v/nolia/Noodle.svg)](https://jitpack.io/#nolia/Noodle)
 
 Noodle is a simple object storage for Android.
