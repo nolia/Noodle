@@ -23,4 +23,8 @@ cache:
   - $HOME/.m2
   - $HOME/.gradle
 
-script: ./gradlew :noodle:clean :noodle:test
+script: ./gradlew :noodle:build jacocoTestReport
+
+after_success:
+  — bash <(curl -s https://codecov.io/bash)
+

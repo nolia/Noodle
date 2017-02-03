@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'groovyx.grooid.groovy-android'
+apply plugin: 'jacoco-android'
 
 // Publishing config for JitPack.
 group='com.github.nolia'
