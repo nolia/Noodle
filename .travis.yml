@@ -27,8 +27,5 @@ cache:
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
 
-script: ./gradlew :noodle:build jacocoTestReport
-
-after_success:
-  — bash <(curl -s https://codecov.io/bash)
+script: ./gradlew :noodle:test
 
