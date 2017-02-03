@@ -69,4 +69,12 @@ public class Record {
 
     return buffer;
   }
+
+  @Override
+  public String toString() {
+    return "Record{" +
+        "key=" + new String(key) +
+        ", data=" + new String(data) +
+        '}';
+  }
 }

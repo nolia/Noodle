@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -20,7 +21,7 @@ public class ByteBufferStorage implements Storage {
   int lastPosition = 0;
 
   @Override
-  public void put(final Record record) {
+  public synchronized void put(final Record record) {
     // Check if need to replace.
     final int existingPosition = positionOf(record.key);
     if (existingPosition >= 0) {
@@ -61,7 +62,7 @@ public class ByteBufferStorage implements Storage {
 
 
   @Override
-  public Record remove(final byte[] key) {
+  public synchronized Record remove(final byte[] key) {
     final int pos = positionOf(key);
 
     if (pos == -1) {
@@ -120,7 +121,7 @@ public class ByteBufferStorage implements Storage {
   }
 
   @Override
-  public Record get(final byte[] key) {
+  public synchronized Record get(final byte[] key) {
     final int pos = positionOf(key);
 
     return pos != -1
@@ -129,7 +130,7 @@ public class ByteBufferStorage implements Storage {
   }
 
   @Override
-  public List<byte[]> prefixedWith(final byte[] prefix) {
+  public synchronized List<byte[]> prefixedWith(final byte[] prefix) {
     final ArrayList<byte[]> keys = new ArrayList<>();
     for (BytesWrapper wrapper : treeMapIndex.keySet()) {
       if (wrapper.hasPrefix(prefix)) {
@@ -139,8 +140,8 @@ public class ByteBufferStorage implements Storage {
     return Collections.unmodifiableList(keys);
   }
 
-  public TreeMap<BytesWrapper, Integer> getTreeMapIndex() {
-    return treeMapIndex;
+  public Map<BytesWrapper, Integer> getTreeMapIndex() {
+    return Collections.unmodifiableSortedMap(treeMapIndex);
   }
 
   private Record getRecordAt(final int position) {
