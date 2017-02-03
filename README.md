@@ -1,29 +1,23 @@
+![Noodles image](noodles.png)
 # Noodle
 [![Build Status](https://travis-ci.org/nolia/Noodle.svg?branch=master)](https://travis-ci.org/nolia/Noodle)   [![](https://jitpack.io/v/nolia/Noodle.svg)](https://jitpack.io/#nolia/Noodle)
 
 
 Noodle is a simple object storage for Android.
 
-![Noodles image](noodles.png)
-
 ### Download
 
 Get it from JitPack.
 
-Step 1. Add it in your root build.gradle at the end of repositories:
-```
-allprojects {
-  repositories {
-   ...
-    maven { url 'https://jitpack.io' }
-  }
-}
-```
 
-Step 2. Add the dependency
 ```
+repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
-  compile 'com.github.nolia:Noodle:v0.1'
+    compile 'com.github.nolia:Noodle:v0.1'
 }
 ```
 
