@@ -4,7 +4,7 @@
 
 Noodle is a simple object storage for Android.
 
-![Noodles image](noodles.svg)
+![Noodles image](noodles.png)
 
 ### Download
 
