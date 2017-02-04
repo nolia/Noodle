@@ -84,5 +84,5 @@ Noodle stores all the data as byte arrays. By default it converts classes using 
 - [ ] Documentation :)
 
 ### License
-MIT license, see more [here](LICENCE.md).
+MIT license, see more [here](LICENSE.md).
 
