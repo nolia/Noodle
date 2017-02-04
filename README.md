@@ -77,9 +77,12 @@ Noodle stores all the data as byte arrays. By default it converts classes using 
 
 
 ### Still to be done:
-- [ ] Id generation strategy
+
+- [ ] Key-value storage
 - [ ] Simple annotation processing for entities ids
 - [ ] Rx support
+- [ ] Encryption
+- [ ] Id generation strategy
 - [ ] Indexes (maybe)
 - [ ] Documentation :)
 
