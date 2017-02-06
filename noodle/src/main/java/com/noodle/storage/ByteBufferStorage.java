@@ -12,8 +12,7 @@ import java.util.TreeMap;
  */
 public class ByteBufferStorage implements Storage {
 
-  // 1 kb
-  static final int INITIAL_SIZE = 1024;
+  static final int INITIAL_SIZE = 128;
 
   ByteBuffer buffer = ByteBuffer.allocate(INITIAL_SIZE);
 
@@ -43,7 +42,7 @@ public class ByteBufferStorage implements Storage {
     // New record - append.
     if (record.size() + lastPosition >= buffer.limit()) {
       // Grow the buffer.
-      growBufferSize();
+      growBufferSize(buffer.limit() + 2 * record.size());
     }
 
     buffer.position(lastPosition);
@@ -53,8 +52,8 @@ public class ByteBufferStorage implements Storage {
     lastPosition = buffer.position();
   }
 
-  protected void growBufferSize() {
-    final ByteBuffer newBuffer = ByteBuffer.allocate(buffer.capacity() * 2);
+  protected void growBufferSize(final int newSize) {
+    final ByteBuffer newBuffer = ByteBuffer.allocate(newSize);
     newBuffer.put(buffer);
 
     buffer = newBuffer;
@@ -88,7 +87,7 @@ public class ByteBufferStorage implements Storage {
       // Check if last element.
       lastPosition = pos;
 
-      removedBytes = 0;
+      removedBytes = record.size();
     } else {
       // Element in the middle, need to compact.
 
@@ -100,8 +99,8 @@ public class ByteBufferStorage implements Storage {
 
       removedBytes = record.size();
 
-      lastPosition -= removedBytes;
     }
+    lastPosition -= removedBytes;
 
     buffer.position(lastPosition);
 
@@ -115,9 +114,18 @@ public class ByteBufferStorage implements Storage {
           treeMapIndex.put(keyInIndex, position - removedBytes);
         }
       }
+
+      final int newSize = buffer.limit() - removedBytes;
+      shrinkBuffer(newSize);
     }
 
     return record;
+  }
+
+  protected void shrinkBuffer(final int newSize) {
+    final ByteBuffer newBuffer = ByteBuffer.allocate(newSize);
+    newBuffer.put(buffer.array(), 0, newSize);
+    buffer = newBuffer;
   }
 
   @Override

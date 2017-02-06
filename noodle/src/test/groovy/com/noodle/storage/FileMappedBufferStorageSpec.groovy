@@ -1,11 +1,14 @@
 package com.noodle.storage
 
 import org.robospock.RoboSpecification
+import spock.lang.Unroll
 
 /**
  *
  */
 class FileMappedBufferStorageSpec extends RoboSpecification {
+
+  private Random random = new Random(123)
 
   private File file
   private FileMappedBufferStorage storage
@@ -54,7 +57,61 @@ class FileMappedBufferStorageSpec extends RoboSpecification {
 
       anotherStorage.get(r.key) == r
     }
+  }
 
+  def "should grow file when adding records"() {
+    given:
+    int totalSize = 0
+    def records = []
+    1000.times {
+      def key = it.toString().getBytes()
+      byte[] data = new byte[128]
+      random.nextBytes(data)
+      def r = new Record(key, data)
+      totalSize += r.size()
+      records << r
+    }
+
+    when:
+    records.each {
+      storage.put(it)
+    }
+
+    then:
+    file.size() == totalSize + ByteBufferStorage.INITIAL_SIZE
+  }
+
+  @Unroll
+  def "should shrink file when deleting items at #part"(int start, String part) {
+    given:
+    int totalSize = 0
+    def records = []
+    1000.times {
+      def key = String.format("%d", it).bytes
+      byte[] data = new byte[128]
+      random.nextBytes(data)
+      def r = new Record(key, data)
+      records << r
+      totalSize += r.size()
+
+      storage.put(r)
+    }
+
+    when:
+    int removedSize = 0
+    for (int i = start; i < start + 500; i++) {
+      storage.remove(records[i].key)
+      removedSize += records[i].size()
+    }
+
+    then:
+    file.size() == ByteBufferStorage.INITIAL_SIZE + totalSize - removedSize
+
+    where:
+    start | part
+    0     | "beginning"
+    250   | "middle"
+    500   | "end"
   }
 
   void cleanup() {

@@ -100,7 +100,6 @@ class ByteBufferStorageSpec extends RoboSpecification {
     storage.remove(toRemove.key)
 
     then:
-    storage.buffer.position() == storage.lastPosition
     storage.treeMapIndex.size() == 2
 
     where:
@@ -147,6 +146,18 @@ class ByteBufferStorageSpec extends RoboSpecification {
     then:
     list.size() == 4
     list.containsAll items.subList(0, 4)*.key
+  }
+
+  def "new record should grow buffer on double size of record"() {
+    when:
+    byte[] data = new byte[128]
+    random.nextBytes(data)
+
+    def record = new Record("1".bytes, data)
+    storage.put(record)
+
+    then:
+    storage.buffer.limit() == ByteBufferStorage.INITIAL_SIZE + 2 * record.size()
   }
 
   def "add more records should grow the buffer"() {

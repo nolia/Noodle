@@ -55,12 +55,20 @@ public class FileMappedBufferStorage extends ByteBufferStorage {
   }
 
   @Override
-  protected void growBufferSize() {
-    try {
-      // Nice to have some reverse-exponential growth here.
-      randomAccessFile.setLength(randomAccessFile.length() * 2);
+  protected void growBufferSize(final int newSize) {
+    remapFileToBuffer(newSize);
+  }
 
-      buffer = randomAccessFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, randomAccessFile.length());
+  @Override
+  protected void shrinkBuffer(final int newSize) {
+    remapFileToBuffer(newSize);
+  }
+
+  private void remapFileToBuffer(final int newSize) {
+    try {
+      randomAccessFile.setLength(newSize);
+
+      buffer = randomAccessFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, newSize);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
