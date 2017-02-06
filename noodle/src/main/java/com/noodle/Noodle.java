@@ -4,15 +4,20 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.noodle.collection.Collection;
+import com.noodle.collection.SimpleResult;
 import com.noodle.collection.StoredConvertedCollection;
 import com.noodle.converter.Converter;
 import com.noodle.converter.GsonConverter;
 import com.noodle.description.Description;
 import com.noodle.storage.FileMappedBufferStorage;
+import com.noodle.storage.Record;
+import com.noodle.storage.Storage;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.concurrent.Callable;
 
 /**
  * Noodle is a lightweight super-simple persistence framework.
@@ -31,7 +36,7 @@ public class Noodle {
   private final Context context;
   private final String path;
   private final File file;
-  private final FileMappedBufferStorage storage;
+  Storage storage;
 
   final HashMap<String, Collection> collectionHashMap = new HashMap<>();
   final HashMap<String, Description> descriptionHashMap = new HashMap<>();
@@ -109,4 +114,41 @@ public class Noodle {
     return result;
   }
 
+  public <T> Result<T> get(final String key, final Class<T> type) {
+    return new SimpleResult<>(new Callable<T>() {
+      @Override
+      public T call() throws Exception {
+        final byte[] keyBytes = keyValueKey(key);
+        final Record record = storage.get(keyBytes);
+        return record != null
+            ? converter.fromBytes(record.getData(), type)
+            : null;
+      }
+    });
+  }
+
+  public <T> Result<T> put(final String key, final T value) {
+    return new SimpleResult<>(new Callable<T>() {
+      @Override
+      public T call() throws Exception {
+        final byte[] keyBytes = keyValueKey(key);
+        final byte[] data = converter.toBytes(value);
+        storage.put(new Record(keyBytes, data));
+        return value;
+      }
+    });
+  }
+
+  public Result<Boolean> delete(final String key) {
+    return new SimpleResult<>(new Callable<Boolean>() {
+      @Override
+      public Boolean call() throws Exception {
+        return storage.remove(keyValueKey(key)) != null;
+      }
+    });
+  }
+
+  byte[] keyValueKey(final String key) {
+    return String.format(Locale.US, "k-v:%s", key).getBytes();
+  }
 }

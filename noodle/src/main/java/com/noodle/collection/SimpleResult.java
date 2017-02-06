@@ -8,13 +8,13 @@ import java.util.concurrent.Executor;
 /**
  * Result implementation, bases on Callable instance.
  */
-class SimpleResult<K> implements Result<K> {
+public class SimpleResult<K> implements Result<K> {
 
   private final Callable<K> action;
   Executor executor;
   Callback<K> callback;
 
-  SimpleResult(Callable<K> action) {
+  public SimpleResult(Callable<K> action) {
     this.action = action;
   }
 

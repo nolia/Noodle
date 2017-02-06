@@ -1,6 +1,8 @@
 package com.noodle
 
 import com.noodle.description.Description
+import com.noodle.storage.Record
+import com.noodle.storage.Storage
 import com.noodle.util.Data
 import org.robolectric.RuntimeEnvironment
 import org.robospock.RoboSpecification
@@ -58,4 +60,85 @@ class NoodleSpec extends RoboSpecification {
     then:
     secondCollection == collection
   }
+
+  def "should put value by key"() {
+    given:
+    final def key = "key"
+    final def value = "value"
+
+    def mockStorage = Mock(Storage)
+    noodle.storage = mockStorage
+
+    when:
+    noodle.put(key, value).now()
+
+    then:
+    1 * mockStorage.put({ it.key == noodle.keyValueKey(key) && it.data == noodle.converter.toBytes(value) })
+  }
+
+  def "should get value by key"() {
+    setup:
+    final def key = "key"
+    final def expected = "expected"
+    final def record = new Record(key.getBytes(), noodle.converter.toBytes(expected))
+
+    def mockStorage = Mock(Storage)
+    noodle.storage = mockStorage
+
+    when:
+    String value = noodle.get(key, String).now()
+
+    then:
+    1 * mockStorage.get(noodle.keyValueKey(key)) >> record
+    value == expected
+  }
+
+  def "should return null if record is not in storage"() {
+    given:
+    final def notInTheStorage = "not here"
+
+    def mockStorage = Mock(Storage)
+    noodle.storage = mockStorage
+
+    when:
+    String notHere = noodle.get(notInTheStorage, String).now()
+
+    then:
+    1 * mockStorage.get(noodle.keyValueKey(notInTheStorage))
+    notHere == null
+  }
+
+  def "should delete value by key"() {
+    setup:
+    final def key = "key"
+    final def expected = "expected"
+    final def record = new Record(key.getBytes(), noodle.converter.toBytes(expected))
+
+    def mockStorage = Mock(Storage)
+    noodle.storage = mockStorage
+
+    when:
+    Boolean deleted = noodle.delete(key).now()
+
+    then:
+    deleted
+    1 * mockStorage.remove(noodle.keyValueKey(key)) >> record
+  }
+
+  def "should return false if not deleted"() {
+    setup:
+    final def key = "key"
+
+    def mockStorage = Mock(Storage)
+    noodle.storage = mockStorage
+
+    when:
+    Boolean deleted = noodle.delete(key).now()
+
+    then:
+    !deleted
+    1 * mockStorage.remove(noodle.keyValueKey(key)) >> null
+  }
+
+
 }
