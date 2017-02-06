@@ -114,6 +114,14 @@ public class Noodle {
     return result;
   }
 
+  /**
+   * Get object from the storage.
+   *
+   * @param key key, that object was previously stored with
+   * @param type class of object to parse
+   * @param <T> type of the object
+   * @return Result, wrapping wanted object, or null if not found
+   */
   public <T> Result<T> get(final String key, final Class<T> type) {
     return new SimpleResult<>(new Callable<T>() {
       @Override
@@ -127,6 +135,14 @@ public class Noodle {
     });
   }
 
+  /**
+   * Put object to the storage.
+   *
+   * @param key key that object will be stored with
+   * @param value object
+   * @param <T> object type
+   * @return Result, wrapping the same object
+   */
   public <T> Result<T> put(final String key, final T value) {
     return new SimpleResult<>(new Callable<T>() {
       @Override
@@ -139,6 +155,12 @@ public class Noodle {
     });
   }
 
+  /**
+   * Deletes object from storage
+   * @param key key to delete object by
+   * @return Result, wrapping boolean, indicating whether object was deleted
+   * by this operation
+   */
   public Result<Boolean> delete(final String key) {
     return new SimpleResult<>(new Callable<Boolean>() {
       @Override
