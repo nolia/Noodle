@@ -1,5 +1,7 @@
 package com.noodle
 
+import android.content.Context
+import com.noodle.converter.Converter
 import com.noodle.description.Description
 import com.noodle.storage.Record
 import com.noodle.storage.Storage
@@ -13,9 +15,11 @@ import org.robospock.RoboSpecification
 class NoodleSpec extends RoboSpecification {
 
   private Noodle noodle
+  private Context context
 
   void setup() {
-    noodle = new Noodle(RuntimeEnvironment.application)
+    context = RuntimeEnvironment.application
+    noodle = new Noodle(context)
   }
 
   def "should register type"() {
@@ -140,5 +144,23 @@ class NoodleSpec extends RoboSpecification {
     1 * mockStorage.remove(noodle.keyValueKey(key)) >> null
   }
 
+  def "should create with builder"() {
+    given:
+    Converter converter = Mock()
+    def path = "other.noodle"
+    def description = Description.of(Data).withIdField("id").build()
 
+    when:
+    def newNoodle = Noodle.with(context)
+      .converter(converter)
+      .filePath(path)
+      .addType(description)
+      .build()
+
+    then:
+    newNoodle.converter == converter
+    newNoodle.path == path
+
+    newNoodle.descriptionHashMap.containsValue(description)
+  }
 }

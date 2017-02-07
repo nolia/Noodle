@@ -33,14 +33,28 @@ import java.util.concurrent.Callable;
  */
 public class Noodle {
 
-  private final Context context;
-  private final String path;
-  private final File file;
+  final Context context;
+  final String path;
+  final File file;
   Storage storage;
 
   final HashMap<String, Collection> collectionHashMap = new HashMap<>();
   final HashMap<String, Description> descriptionHashMap = new HashMap<>();
   final Converter converter;
+
+
+  /**
+   * Creates new builder instance
+   * @param context application context
+   * @return new Builder instance
+   */
+  public static Builder with(final Context context) {
+    return new Builder(context);
+  }
+
+  private static String defaultNoodleFile(final Context context) {
+    return context.getFilesDir().getAbsolutePath() + File.separator + "data.noodle";
+  }
 
   /**
    * Create new Noodle with default settings.
@@ -48,7 +62,7 @@ public class Noodle {
    * @param context should probably be application context
    */
   public Noodle(final Context context) {
-    this(context, context.getFilesDir().getAbsolutePath() + File.separator + "data.noodle",
+    this(context, defaultNoodleFile(context),
         new GsonConverter(new Gson()));
   }
 
@@ -172,5 +186,72 @@ public class Noodle {
 
   byte[] keyValueKey(final String key) {
     return String.format(Locale.US, "k-v:%s", key).getBytes();
+  }
+
+
+  /**
+   * Noodle Builder.
+   */
+  public static class Builder {
+
+    private final Context context;
+    private String filePath;
+    private Converter converter;
+
+    final HashMap<Class, Description> descriptionHashMap = new HashMap<>();
+
+    public Builder(final Context context) {
+      this.context = context;
+      this.filePath = defaultNoodleFile(context);
+    }
+
+    /**
+     * Sets the path to a noodle file
+     * @param filePath path to file
+     * @return this builder instance
+     */
+    public Builder filePath(final String filePath) {
+      this.filePath = filePath;
+      return this;
+    }
+
+    /**
+     * Sets the converter of Noodle to be built
+     * @param converter {@link Converter} to be used in this Noodle
+     * @return this builder instance
+     */
+    public Builder converter(final Converter converter) {
+      this.converter = converter;
+      return this;
+    }
+
+    /**
+     * Add given description and it's type to a set of registered types
+     * @param description description of type you want to store
+     * @param <T> type
+     * @return this builder instance
+     */
+    public <T> Builder addType(final Description<T> description) {
+      descriptionHashMap.put(description.getType(), description);
+      return this;
+    }
+
+
+    /**
+     * Builds the Noodle according to params.
+     * @return Noodle instance
+     */
+    public Noodle build() {
+      final Noodle noodle = new Noodle(
+          context,
+          filePath,
+          converter != null ? converter : new GsonConverter(new Gson())
+      );
+      for (Class clazz : descriptionHashMap.keySet()) {
+        noodle.registerType(clazz, descriptionHashMap.get(clazz));
+      }
+
+      return noodle;
+    }
   }
 }

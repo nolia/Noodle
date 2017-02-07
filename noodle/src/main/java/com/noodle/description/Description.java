@@ -9,11 +9,13 @@ import java.lang.reflect.Modifier;
  */
 public class Description<T> {
 
+  final Class<T> clazz;
   final GetIdOperator<T> getIdOperator;
   final SetIdOperator<T> setIdOperator;
 
-  public Description(final GetIdOperator<T> getIdOperator,
+  public Description(final Class<T> clazz, final GetIdOperator<T> getIdOperator,
                      final SetIdOperator<T> setIdOperator) {
+    this.clazz = clazz;
     this.getIdOperator = getIdOperator;
     this.setIdOperator = setIdOperator;
   }
@@ -22,7 +24,7 @@ public class Description<T> {
    * Creates new {@link DescriptionBuilder} to create description of the item.
    *
    * @param clazz type of entities
-   * @param <T> type of entities
+   * @param <T>   type of entities
    * @return new {@link DescriptionBuilder}
    */
   public static <T> DescriptionBuilder<T> of(Class<T> clazz) {
@@ -47,6 +49,14 @@ public class Description<T> {
    */
   public void setItemId(final T t, final long id) {
     setIdOperator.setId(t, id);
+  }
+
+  /**
+   * Type this is description of
+   * @return this is description of
+   */
+  public Class<T> getType() {
+    return clazz;
   }
 
   /**
@@ -115,7 +125,7 @@ public class Description<T> {
         throw new RuntimeException("Set id operator may not be null");
       }
 
-      return new Description<>(getIdOperator, setIdOperator);
+      return new Description<>(clazz, getIdOperator, setIdOperator);
     }
   }
 
