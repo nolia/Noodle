@@ -7,6 +7,8 @@ import com.noodle.storage.FileMappedBufferStorage
 import com.noodle.util.Data
 import org.robospock.RoboSpecification
 
+import java.util.concurrent.TimeUnit
+
 import static com.noodle.util.ThreadUtils.spawnThreads
 
 class CollectionThreadingSpec extends RoboSpecification {
@@ -39,7 +41,7 @@ class CollectionThreadingSpec extends RoboSpecification {
     when:
     spawnThreads(10) { number ->
       collection.put(new Data(name: number)).now()
-    }.await()
+    }.await(2, TimeUnit.SECONDS)
 
     then:
     println '\nResults:'
@@ -57,7 +59,7 @@ class CollectionThreadingSpec extends RoboSpecification {
       def data = collection.get(id).now()
       data.name += number.toString()
       collection.put(data).now()
-    }.await()
+    }.await(2, TimeUnit.SECONDS)
 
     then:
     println("\nResult")
@@ -73,7 +75,7 @@ class CollectionThreadingSpec extends RoboSpecification {
         collection.put(data).now()
       }
 
-    }.await()
+    }.await(2, TimeUnit.SECONDS)
 
     then:
     println "\ndata = ${collection.get(123).now()}"

@@ -1,5 +1,8 @@
 package com.noodle.storage;
 
+import com.noodle.encryption.Encryption;
+import com.noodle.encryption.NoEncryption;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -14,6 +17,11 @@ public class FileMappedBufferStorage extends ByteBufferStorage {
   private RandomAccessFile randomAccessFile;
 
   public FileMappedBufferStorage(final File file) throws IOException {
+    this(file, new NoEncryption());
+  }
+
+  public FileMappedBufferStorage(final File file, final Encryption encryption) throws IOException {
+    super(encryption);
     randomAccessFile = new RandomAccessFile(file, "rw");
 
     final boolean existed = file.exists();

@@ -1,5 +1,8 @@
 package com.noodle.storage;
 
+import com.noodle.encryption.Encryption;
+import com.noodle.encryption.NoEncryption;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +17,16 @@ public class ByteBufferStorage implements Storage {
 
   static final int INITIAL_SIZE = 128;
 
+  private final Encryption encryption;
+
+  public ByteBufferStorage() {
+    this(new NoEncryption());
+  }
+
+  public ByteBufferStorage(final Encryption encryption) {
+    this.encryption = encryption;
+  }
+
   ByteBuffer buffer = ByteBuffer.allocate(INITIAL_SIZE);
 
   TreeMap<BytesWrapper, Integer> treeMapIndex = new TreeMap<>();
@@ -21,36 +34,60 @@ public class ByteBufferStorage implements Storage {
 
   @Override
   public synchronized void put(final Record record) {
+    final byte[] key = record.key;
+    final Record encryptedRecord = encryptRecord(record);
+
+    if (encryptedRecord.size() + lastPosition >= buffer.limit()) {
+      // Grow the buffer.
+      growBufferSize(buffer.limit() + 2 * encryptedRecord.size());
+    }
+
     // Check if need to replace.
-    final int existingPosition = positionOf(record.key);
+    final int existingPosition = positionOf(key);
     if (existingPosition >= 0) {
       final Record savedRecord = getRecordAt(existingPosition);
 
-      if (record.data.length == savedRecord.data.length) {
+      if (encryptedRecord.data.length == savedRecord.data.length) {
         // Put on the same place, don't update indexes.
-        final int dataStart = 8 + record.key.length;
-        buffer.position(dataStart);
-        buffer.put(record.data);
+        buffer.put(encryptedRecord.asByteBuffer());
 
         lastPosition = buffer.position();
         return;
       }
 
-      remove(record.key);
+      remove(key);
     }
 
-    // New record - append.
-    if (record.size() + lastPosition >= buffer.limit()) {
-      // Grow the buffer.
-      growBufferSize(buffer.limit() + 2 * record.size());
-    }
-
+    // Append the new record.
     buffer.position(lastPosition);
-    buffer.put(record.asByteBuffer());
-    treeMapIndex.put(new BytesWrapper(record.key), lastPosition);
+    buffer.put(encryptedRecord.asByteBuffer());
+    treeMapIndex.put(new BytesWrapper(key), lastPosition);
 
     lastPosition = buffer.position();
   }
+
+  private Record encryptRecord(final Record record) {
+    try {
+      return new Record(
+          encryption.encrypt(record.key),
+          encryption.encrypt(record.data)
+      );
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private Record decryptRecord(final Record record) {
+    try {
+      return new Record(
+          encryption.decrypt(record.key),
+          encryption.decrypt(record.data)
+      );
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 
   protected void growBufferSize(final int newSize) {
     final ByteBuffer newBuffer = ByteBuffer.allocate(newSize);
@@ -58,7 +95,6 @@ public class ByteBufferStorage implements Storage {
 
     buffer = newBuffer;
   }
-
 
   @Override
   public synchronized Record remove(final byte[] key) {
@@ -133,7 +169,7 @@ public class ByteBufferStorage implements Storage {
     final int pos = positionOf(key);
 
     return pos != -1
-        ? getRecordAt(pos)
+        ? decryptRecord(getRecordAt(pos))
         : null;
   }
 
