@@ -93,7 +93,7 @@ class SimpleResultSpec extends RoboSpecification {
   def "should notify callback on exception"() {
     given:
     def callback = Mock(Result.Callback)
-    result = new SimpleResult<>({throw  UnsupportedOperationException("Ha!")} as Callable)
+    result = new SimpleResult<>({ throw UnsupportedOperationException("Ha!") } as Callable)
 
     when:
     result.executeOn(this.executor).withCallback(callback).get()
@@ -101,5 +101,41 @@ class SimpleResultSpec extends RoboSpecification {
     then:
     0 * callback.onReady(_)
     1 * callback.onError(_ as RuntimeException)
+  }
+
+  def "should convert to rx Observable"() {
+    given:
+    def mockAction = Mock(Callable)
+    result = new SimpleResult<>(mockAction)
+
+    when:
+    def received = null
+    boolean completed = false
+    result.toRxObservable().subscribe(
+        { received = it },
+        { throw it },
+        { completed = true }
+    )
+
+    then:
+    1 * mockAction.call() >> "Hello!"
+    received == "Hello!"
+    completed
+  }
+
+  def "should notify observable with exception"() {
+    given:
+    def callable = {
+      throw new UnsupportedOperationException("No way!")
+    } as Callable
+
+    when:
+    Throwable error
+    new SimpleResult<>(callable)
+        .toRxObservable()
+        .subscribe({}, { error = it }, {})
+
+    then:
+    error != null
   }
 }

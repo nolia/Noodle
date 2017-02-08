@@ -5,6 +5,8 @@ import com.noodle.Result;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
+import io.reactivex.Observable;
+
 /**
  * Result implementation, based on Callable instance.
  */
@@ -60,6 +62,11 @@ public class SimpleResult<K> implements Result<K> {
         }
       }
     });
+  }
+
+  @Override
+  public Observable<K> toRxObservable() {
+    return Observable.fromCallable(action);
   }
 
 }

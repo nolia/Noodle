@@ -2,6 +2,8 @@ package com.noodle;
 
 import java.util.concurrent.Executor;
 
+import io.reactivex.Observable;
+
 /**
  * Represents result of operation upon a collection. The actual
  * item can be retrieved both sync and async.
@@ -41,6 +43,14 @@ public interface Result<T> {
    * not previously specified .
    */
   void get();
+
+  /**
+   * Converts this result wrapper to rx observable.
+   * <b>Caution: This method is optional and it relies on RxJava (version 2.x.y) to
+   * be provided by the client</b>.
+   * @return Observable instance
+   */
+  Observable<T> toRxObservable();
 
   /**
    * Callback of the result.
