@@ -15,6 +15,8 @@ import com.noodle.storage.Storage;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -236,6 +238,31 @@ public class Noodle {
       return this;
     }
 
+    /**
+     * Register given type to be used in storage. <b>NOTE: Entity class must have an annotated id field,
+     * with {@link Id} annotation present.</b>
+     * @param type type you want to store
+     * @param <T> type
+     * @return this build instance
+     */
+    public <T> Builder addType(final Class<T> type) {
+      Field idField = null;
+      for (Field field : type.getFields()) {
+        for (Annotation annotation : field.getAnnotations()) {
+          if (annotation.annotationType() == Id.class) {
+            if (idField != null) {
+              throw new RuntimeException("Entity may have only one id field");
+            }
+            idField = field;
+          }
+        }
+      }
+      if (idField == null) {
+        throw new RuntimeException("Entity must have an Id field");
+      }
+
+      return addType(Description.of(type).withIdField(idField.getName()).build());
+    }
 
     /**
      * Builds the Noodle according to params.

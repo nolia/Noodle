@@ -1,7 +1,6 @@
 package com.noodle
 
 import android.content.Context
-import com.noodle.converter.Converter
 import com.noodle.description.Description
 import com.noodle.storage.Record
 import com.noodle.storage.Storage
@@ -144,23 +143,4 @@ class NoodleSpec extends RoboSpecification {
     1 * mockStorage.remove(noodle.keyValueKey(key)) >> null
   }
 
-  def "should create with builder"() {
-    given:
-    Converter converter = Mock()
-    def path = "other.noodle"
-    def description = Description.of(Data).withIdField("id").build()
-
-    when:
-    def newNoodle = Noodle.with(context)
-      .converter(converter)
-      .filePath(path)
-      .addType(description)
-      .build()
-
-    then:
-    newNoodle.converter == converter
-    newNoodle.path == path
-
-    newNoodle.descriptionHashMap.containsValue(description)
-  }
 }
