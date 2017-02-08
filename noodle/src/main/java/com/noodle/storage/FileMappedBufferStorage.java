@@ -16,29 +16,34 @@ public class FileMappedBufferStorage extends ByteBufferStorage {
 
   private RandomAccessFile randomAccessFile;
 
-  public FileMappedBufferStorage(final File file) throws IOException {
+  public FileMappedBufferStorage(final File file) {
     this(file, new NoEncryption());
   }
 
-  public FileMappedBufferStorage(final File file, final Encryption encryption) throws IOException {
+  public FileMappedBufferStorage(final File file, final Encryption encryption) {
     super(encryption);
-    randomAccessFile = new RandomAccessFile(file, "rw");
+    try {
+      randomAccessFile = new RandomAccessFile(file, "rw");
 
-    final boolean existed = file.exists();
-    if (!existed) {
-      //noinspection ResultOfMethodCallIgnored
-      file.createNewFile();
-    }
 
-    if (randomAccessFile.length() < INITIAL_SIZE) {
-      randomAccessFile.setLength(INITIAL_SIZE);
-    }
+      final boolean existed = file.exists();
+      if (!existed) {
+        //noinspection ResultOfMethodCallIgnored
+        file.createNewFile();
+      }
 
-    buffer = randomAccessFile.getChannel()
-        .map(FileChannel.MapMode.READ_WRITE, 0, randomAccessFile.length());
+      if (randomAccessFile.length() < INITIAL_SIZE) {
+        randomAccessFile.setLength(INITIAL_SIZE);
+      }
 
-    if (existed) {
-      remapIndexes();
+      buffer = randomAccessFile.getChannel()
+          .map(FileChannel.MapMode.READ_WRITE, 0, randomAccessFile.length());
+
+      if (existed) {
+        remapIndexes();
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

@@ -3,6 +3,8 @@ package com.noodle
 import android.content.Context
 import com.noodle.converter.Converter
 import com.noodle.description.Description
+import com.noodle.encryption.Encryption
+import com.noodle.storage.FileMappedBufferStorage
 import com.noodle.util.AnnotatedData
 import com.noodle.util.Data
 import com.noodle.util.DoubleIdData
@@ -25,19 +27,21 @@ class NoodleBuilderSpec extends RoboSpecification {
     Converter converter = Mock()
     def path = "build/tmp/other.noodle"
     def description = Description.of(Data).withIdField("id").build()
+    def encryption = Mock(Encryption)
 
     when:
     def newNoodle = Noodle.with(context)
         .converter(converter)
         .filePath(path)
         .addType(description)
+        .encryption(encryption)
         .build()
 
     then:
     newNoodle.converter == converter
-    newNoodle.path == path
 
     newNoodle.descriptionHashMap.containsValue(description)
+    newNoodle.storage instanceof FileMappedBufferStorage
   }
 
   def "should register annotated type with builder"() {

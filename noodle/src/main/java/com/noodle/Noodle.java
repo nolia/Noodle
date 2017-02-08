@@ -9,12 +9,13 @@ import com.noodle.collection.StoredConvertedCollection;
 import com.noodle.converter.Converter;
 import com.noodle.converter.GsonConverter;
 import com.noodle.description.Description;
+import com.noodle.encryption.Encryption;
+import com.noodle.encryption.NoEncryption;
 import com.noodle.storage.FileMappedBufferStorage;
 import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -36,8 +37,6 @@ import java.util.concurrent.Callable;
 public class Noodle {
 
   final Context context;
-  final String path;
-  final File file;
   Storage storage;
 
   final HashMap<String, Collection> collectionHashMap = new HashMap<>();
@@ -64,28 +63,22 @@ public class Noodle {
    * @param context should probably be application context
    */
   public Noodle(final Context context) {
-    this(context, defaultNoodleFile(context),
-        new GsonConverter(new Gson()));
+    this(context,
+        new FileMappedBufferStorage(new File(defaultNoodleFile(context))),
+        new GsonConverter(new Gson())
+    );
   }
 
   /**
    * Creates new Noodle with specified parameters.
-   *
    * @param context application context
-   * @param path path to the data file
+   * @param storage
    * @param converter which converter to use
    */
-  public Noodle(final Context context, final String path, final Converter converter) {
+  public Noodle(final Context context, final Storage storage, final Converter converter) {
     this.context = context;
-    this.path = path;
-    this.file = new File(path);
+    this.storage = storage;
     this.converter = converter;
-
-    try {
-      storage = new FileMappedBufferStorage(file);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   /**
@@ -199,6 +192,7 @@ public class Noodle {
     private final Context context;
     private String filePath;
     private Converter converter;
+    private Encryption encryption;
 
     final HashMap<Class, Description> descriptionHashMap = new HashMap<>();
 
@@ -239,6 +233,16 @@ public class Noodle {
     }
 
     /**
+     * Set the {@link Encryption} to be used in a result Noodle.
+     * @param encryption encryption to use
+     * @return this builder instance
+     */
+    public Builder encryption(final Encryption encryption) {
+      this.encryption = encryption;
+      return this;
+    }
+
+    /**
      * Register given type to be used in storage. <b>NOTE: Entity class must have an annotated id field,
      * with {@link Id} annotation present.</b>
      * @param type type you want to store
@@ -269,9 +273,13 @@ public class Noodle {
      * @return Noodle instance
      */
     public Noodle build() {
+      final FileMappedBufferStorage storage = new FileMappedBufferStorage(
+          new File(filePath),
+          encryption != null ? encryption : new NoEncryption()
+      );
       final Noodle noodle = new Noodle(
           context,
-          filePath,
+          storage,
           converter != null ? converter : new GsonConverter(new Gson())
       );
       for (Class clazz : descriptionHashMap.keySet()) {
