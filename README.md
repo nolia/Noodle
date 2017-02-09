@@ -18,20 +18,21 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.nolia:Noodle:v0.2'
+    compile 'com.github.nolia:Noodle:v0.5'
 }
 ```
 
 ## Usage
 
 You can use Noodle both as a key-value storage and as collection persistence framework.
-
-### Key-value storage
+To initialize Noodle you can use builder:
 ```java
-Noodle noodle = new Noodle(context);
+Noodle noodle = Noodle.with(context).build();
 ```
 
-Put an object to storage.
+### Key-value storage
+
+You can put any type of object to the storage.
 ```java
 noodle.put("Android7", "Nougat").now();
 ```
@@ -48,11 +49,15 @@ boolean isRemoved = noodle.delete("toRemove").now();
 
 ### Collections
 Using collections is also really simple: no schema, no relations, no consistency rules, no thread-contained objects.
-Just create Noodle instance and register types you want to store:
+Just create Noodle instance and register types you want to store. The only requirement, that class should have
+an annotated id field with type of `Long` or `long`.
 
 ```java
 class Book {
+
+  @Id
   long id;
+
   String title;
   String author;
 
@@ -62,15 +67,32 @@ class Book {
   }
 }
 
-Noodle noodle = new Noodle(context)
-  .registerType(Book.class, Description.of(Book.class)
+Noodle noodle = Noodle.with(context)
+  .addType(Book.class)
+  .build();
+
+```
+Alternatively, if you don't want or not able to add annotation to the class,
+you can use `Description`. You can provide either the name of the field (that it
+would be set with reflection mechanism):
+
+```java
+Noodle noodle = Noodle.with(context)
+  .addType(Book.class, Description.of(Book.class)
     .withIdField("id")
     .build()
   );
-
 ```
-
-Note: no annotations needed.
+Or you can specify *get* and *set* methods:
+```java
+Noodle noodle = Noodle.with(context)
+  .registerType(Book.class, Description.of(Book.class)
+    .withGetIdOperator(book -> book.id))
+    .withSetIdOperator((book, id) -> book.id = id)
+    .build()
+  );
+```
+This allows you to use other types as an Id field.
 
 Collections allow you to *list*, *put*, *delete*, *get* (by id) and *filter* your objects.
 
@@ -91,7 +113,6 @@ collection.put(book).now();
 
 // Delete:
 collection.delete(book.id).now();
-
 ```
 
 ### Filter
@@ -107,24 +128,6 @@ List<Book> search(final String query) {
 }
 ```
 Filtering is happening in memory, by pulling objects one by one and testing with provided predicate.
-
-To store objects in collections, entities should have an id field, which has to have type of ```long``` or ```Long```.
-Otherwise you have to declare your own *description* for entity class:
-```java
-class MyPreference {
-  String id;
-  String name;
-}
-
-// ...
-
-noodle.registerType(MyPreference.class,
-    Description.of(MyPreference.class)
-        .withGetIdOperator(preference -> Long.parseLong(preference.id))
-        .withSetIdOperator((preference, id) -> preference.id = Long.toString(id);)
-        .build()
-);
-```
 
 ### Threading
 Each operation on collections and key-value storage is synchronized on **Storage** level.
@@ -156,20 +159,44 @@ collection.filter(new Collection.Predicate<Book>() {
     .get();
 ```
 
-### Storage
-Noodle stores all the data by converting it to byte arrays.
-Default converter is Gson. But you can bring your own converter and store objects the way you want.
+### Rx Support
+If you prefer RxJava, Noodle is got you covered. You can convert any `Result` of the operation to `Observable`:
+```java
+collection.put(book)
+    .toRxObservable()
+    .subscribe();
+```
+**Notes**:
+
+- RxJava v2 is used, so incompatible with version 1
+- Noodle does not ship RxJava transitively, so you have to provide it as a dependency
+- When doing `get` and `delete` operations, if item is not found, Noodle is returning `null`.
+But if using rx wrapper, due to that it does not allow null emissions, you will get `NullPointerException`
+in the `onError` callback.
+
+### Configure
+
+```java
+Noodle noodle = Noodle.with(context)
+    .converter(converter)
+    .filePath(path)
+    .encryption(encryption)
+    .build();
+```
+
+Every component is pluggable, but Noodle provides defaults:
+
+  - converter - Gson for converting objects to JSON and then to byte arrays
+  - encryption - `NoEncryption` is by default, so nothing is encrypted, but you can easily implement one (it only has 2 methods)
 
 
 ### Features:
 
 - [X] Key-value storage
 - [X] Simple collection storage
-- [ ] Simple annotation processing for entities ids
-- [ ] Rx support
-- [ ] Encryption
-- [ ] Id generation strategy
-- [ ] Indexes (maybe)
+- [X] Simple annotation processing for entities ids
+- [X] Rx Support
+- [X] Encryption
 
 ### License
 MIT license, see more [here](LICENSE.md).
