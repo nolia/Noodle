@@ -51,7 +51,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   @Override
   public Result<T> get(final long id) {
-    return new SimpleResult<>(new Callable<T>() {
+    return new Result<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         final byte[] key = getKey(id);
@@ -67,7 +67,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   @Override
   public Result<T> put(final T t) {
-    return new SimpleResult<>(new Callable<T>() {
+    return new Result<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         long id = description.idOfItem(t);
@@ -84,7 +84,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   @Override
   public Result<T> delete(final long id) {
-    return new SimpleResult<>(new Callable<T>() {
+    return new Result<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         final byte[] key = getKey(id);
@@ -98,7 +98,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   @Override
   public Result<List<T>> all() {
-    return new SimpleResult<>(new Callable<List<T>>() {
+    return new Result<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
         return findItemsWith(every);
@@ -108,7 +108,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   @Override
   public Result<List<T>> filter(final Predicate<T> predicate) {
-    return new SimpleResult<>(new Callable<List<T>>() {
+    return new Result<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
         return findItemsWith(predicate);

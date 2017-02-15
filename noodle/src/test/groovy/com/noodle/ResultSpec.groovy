@@ -1,6 +1,5 @@
-package com.noodle.collection
+package com.noodle
 
-import com.noodle.Result
 import org.robospock.RoboSpecification
 
 import java.util.concurrent.Callable
@@ -9,20 +8,20 @@ import java.util.concurrent.Executor
 /**
  *
  */
-class SimpleResultSpec extends RoboSpecification {
+class ResultSpec extends RoboSpecification {
 
-  private SimpleResult<String> result
+  private Result<String> result
   private executor
 
   void setup() {
-    result = new SimpleResult<String>({ "hello, world!" } as Callable<String>)
+    result = new Result<String>({ "hello, world!" } as Callable<String>)
     executor = { it.run() } as Executor
   }
 
   def "should call action when now() is called"() {
     given:
     def mockAction = Mock(Callable)
-    result = new SimpleResult<>(mockAction)
+    result = new Result<>(mockAction)
 
     when:
     result.now()
@@ -39,7 +38,7 @@ class SimpleResultSpec extends RoboSpecification {
     } as Callable<String>
 
     when:
-    def actual = new SimpleResult<>(callable).now()
+    def actual = new Result<>(callable).now()
 
     then:
     actual == expected
@@ -52,7 +51,7 @@ class SimpleResultSpec extends RoboSpecification {
     } as Callable
 
     when:
-    new SimpleResult<>(callable).now()
+    new Result<>(callable).now()
 
     then:
     RuntimeException e = thrown()
@@ -93,7 +92,7 @@ class SimpleResultSpec extends RoboSpecification {
   def "should notify callback on exception"() {
     given:
     def callback = Mock(Result.Callback)
-    result = new SimpleResult<>({ throw UnsupportedOperationException("Ha!") } as Callable)
+    result = new Result<>({ throw UnsupportedOperationException("Ha!") } as Callable)
 
     when:
     result.executeOn(this.executor).withCallback(callback).get()
@@ -106,7 +105,7 @@ class SimpleResultSpec extends RoboSpecification {
   def "should convert to rx Observable"() {
     given:
     def mockAction = Mock(Callable)
-    result = new SimpleResult<>(mockAction)
+    result = new Result<>(mockAction)
 
     when:
     def received = null
@@ -131,7 +130,7 @@ class SimpleResultSpec extends RoboSpecification {
 
     when:
     Throwable error
-    new SimpleResult<>(callable)
+    new Result<>(callable)
         .toRxObservable()
         .subscribe({}, { error = it }, {})
 

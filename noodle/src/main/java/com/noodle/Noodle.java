@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.noodle.collection.Collection;
-import com.noodle.collection.SimpleResult;
 import com.noodle.collection.StoredConvertedCollection;
 import com.noodle.converter.Converter;
 import com.noodle.converter.GsonConverter;
@@ -132,7 +131,7 @@ public class Noodle {
    * @return Result, wrapping wanted object, or null if not found
    */
   public <T> Result<T> get(final String key, final Class<T> type) {
-    return new SimpleResult<>(new Callable<T>() {
+    return new Result<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         final byte[] keyBytes = keyValueKey(key);
@@ -153,7 +152,7 @@ public class Noodle {
    * @return Result, wrapping the same object
    */
   public <T> Result<T> put(final String key, final T value) {
-    return new SimpleResult<>(new Callable<T>() {
+    return new Result<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         final byte[] keyBytes = keyValueKey(key);
@@ -171,7 +170,7 @@ public class Noodle {
    * by this operation
    */
   public Result<Boolean> delete(final String key) {
-    return new SimpleResult<>(new Callable<Boolean>() {
+    return new Result<>(new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
         return storage.remove(keyValueKey(key)) != null;
