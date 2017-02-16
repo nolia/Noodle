@@ -109,6 +109,8 @@ public class ByteBufferStorage implements Storage {
     if (treeMapIndex.size() == 1) {
       lastPosition = 0;
       buffer.position(0);
+      buffer.put(new byte[record.size()]);
+      buffer.position(0);
       treeMapIndex.remove(new BytesWrapper(key));
       return record;
     }
