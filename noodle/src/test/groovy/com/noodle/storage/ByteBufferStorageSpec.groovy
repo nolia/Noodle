@@ -194,4 +194,46 @@ class ByteBufferStorageSpec extends RoboSpecification {
       storage.get(r.key) == r
     }
   }
+
+  @Unroll
+  def "should safely delete elements of random length at #position"(String position, int toRemove) {
+    given:
+    def arr = new ArrayList<Record>()
+    3.times {
+      def key = new byte[random.nextInt(5) + 10 * it + 1]
+      random.nextBytes(key)
+      key[0] = it.byteValue()
+
+      def data = new byte[random.nextInt(10) + 20 * it + 1]
+      random.nextBytes(data)
+
+
+      def record = new Record(key, data)
+      arr << record
+
+      storage.put(record)
+    }
+
+    def removedKey = arr[toRemove].key
+
+    when:
+    storage.remove(removedKey)
+
+    then:
+    3.times { i ->
+      def key = arr[i].key
+      if (key == removedKey) {
+        storage.get(key) == null
+      } else {
+        storage.get(key) == arr[i]
+      }
+    }
+
+
+    where:
+    position | toRemove
+    "start"  | 0
+    "middle" | 1
+    "end"    | 2
+  }
 }

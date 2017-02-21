@@ -123,7 +123,6 @@ public class ByteBufferStorage implements Storage {
       removedBytes = record.size();
     } else if (buffer.position() == lastPosition) {
       // Check if last element.
-      lastPosition = pos;
 
       removedBytes = record.size();
     } else {
