@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.nolia:Noodle:v0.5'
+    compile 'com.github.nolia:Noodle:master-SNAPSHOT'
 }
 ```
 
