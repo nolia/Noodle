@@ -103,7 +103,7 @@ public class Result<K> {
    * Callback of the result.
    * @param <T>
    */
-  interface Callback<T> {
+  public interface Callback<T> {
 
     /**
      * Notified when result operation is ready.

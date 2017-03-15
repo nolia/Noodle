@@ -73,4 +73,9 @@ public class BytesWrapper implements Comparable<BytesWrapper> {
 
     return true;
   }
+
+  @Override
+  public String toString() {
+    return new String(bytes);
+  }
 }

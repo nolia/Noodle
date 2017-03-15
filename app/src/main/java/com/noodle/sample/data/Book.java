@@ -1,5 +1,7 @@
 package com.noodle.sample.data;
 
+import android.annotation.SuppressLint;
+
 public class Book {
 
   public long id;
@@ -7,4 +9,9 @@ public class Book {
   public String title;
   public String authorName;
 
+  @SuppressLint("DefaultLocale")
+  @Override
+  public String toString() {
+    return String.format("(%3d | %15s -> %s", id, authorName, title);
+  }
 }

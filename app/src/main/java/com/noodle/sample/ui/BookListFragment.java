@@ -45,7 +45,7 @@ public class BookListFragment extends Fragment {
   @Override
   public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
     inflater.inflate(R.menu.fragment_book_list, menu);
-    final SearchView searchView = (SearchView) menu.findItem(R.id.seach).getActionView();
+    final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override
       public boolean onQueryTextSubmit(final String query) {
