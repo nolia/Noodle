@@ -81,9 +81,9 @@ public class RandomAccessFileStorage implements Storage {
       final Record encryptedRecord = getRecordAt(pos);
 
       try {
-        // Last element.
         final int encryptedSize = encryptedRecord.size();
 
+        // Last element.
         if (pos + encryptedSize >= file.length()) {
           file.setLength(pos);
         } else {
@@ -147,6 +147,10 @@ public class RandomAccessFileStorage implements Storage {
       }
     }
     return Collections.unmodifiableList(keys);
+  }
+
+  public Map<BytesWrapper, Long> getIndex() {
+    return index;
   }
 
   private Record decryptRecord(final Record encrypted) {

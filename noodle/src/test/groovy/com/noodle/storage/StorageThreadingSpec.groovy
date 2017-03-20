@@ -1,5 +1,6 @@
 package com.noodle.storage
 
+import com.noodle.encryption.NoEncryption
 import org.robospock.RoboSpecification
 
 import static com.noodle.util.ThreadUtils.spawnThreads
@@ -9,14 +10,17 @@ import static com.noodle.util.ThreadUtils.spawnThreads
  */
 class StorageThreadingSpec extends RoboSpecification {
 
-  private ByteBufferStorage storage
-
-  static Record r1 = new Record("1".getBytes(), "a".getBytes()),
-                r2 = new Record("2".getBytes(), "b".getBytes()),
-                r3 = new Record("3".getBytes(), "c".getBytes())
+  private RandomAccessFileStorage storage
+  private File file
 
   void setup() {
-    storage = new ByteBufferStorage()
+    file = new File("test.noodle")
+    storage = new RandomAccessFileStorage(file, new NoEncryption())
+  }
+
+  void cleanup() {
+    storage = null
+    file.delete()
   }
 
   def "should sync on getting and writing item with same key"() {
@@ -32,7 +36,7 @@ class StorageThreadingSpec extends RoboSpecification {
 
     then:
     print "\nData: ${storage.get(recordKey)}"
-    storage.treeMapIndex.size() == 1
+    storage.index.size() == 1
   }
 
   def "should sync on removing one record"() {
@@ -49,7 +53,7 @@ class StorageThreadingSpec extends RoboSpecification {
     }.await()
 
     then:
-    storage.treeMapIndex.size() == 0
+    storage.index.size() == 0
   }
 
 

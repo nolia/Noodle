@@ -11,6 +11,7 @@ import com.noodle.description.Description;
 import com.noodle.encryption.Encryption;
 import com.noodle.encryption.NoEncryption;
 import com.noodle.storage.FileMappedBufferStorage;
+import com.noodle.storage.RandomAccessFileStorage;
 import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
 
@@ -272,7 +273,7 @@ public class Noodle {
      * @return Noodle instance
      */
     public Noodle build() {
-      final FileMappedBufferStorage storage = new FileMappedBufferStorage(
+      final Storage storage = new RandomAccessFileStorage(
           new File(filePath),
           encryption != null ? encryption : new NoEncryption()
       );

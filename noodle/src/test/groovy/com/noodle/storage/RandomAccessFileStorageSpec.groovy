@@ -1,17 +1,15 @@
 package com.noodle.storage
 
+import com.noodle.encryption.NoEncryption
 import org.robospock.RoboSpecification
-import spock.lang.Unroll
+import spock.lang.Unroll;
 
-/**
- *
- */
-class FileMappedBufferStorageSpec extends RoboSpecification {
+class RandomAccessFileStorageSpec extends RoboSpecification {
 
   private Random random = new Random(123)
 
   private File file
-  private FileMappedBufferStorage storage
+  private RandomAccessFileStorage storage
 
   static Record r1 = new Record("1".getBytes(), "a".getBytes()),
                 r2 = new Record("2".getBytes(), "b".getBytes()),
@@ -19,7 +17,7 @@ class FileMappedBufferStorageSpec extends RoboSpecification {
 
   void setup() {
     file = new File("test.noodle")
-    storage = new FileMappedBufferStorage(file)
+    storage = new RandomAccessFileStorage(file, new NoEncryption())
   }
 
   void cleanup() {
@@ -53,12 +51,12 @@ class FileMappedBufferStorageSpec extends RoboSpecification {
     }
 
     and:
-    def anotherStorage = new FileMappedBufferStorage(file)
+    def anotherStorage = new RandomAccessFileStorage(file, new NoEncryption())
 
     then:
-    anotherStorage.treeMapIndex.size() == records.size()
+    anotherStorage.index.size() == records.size()
     records.each { r ->
-      anotherStorage.treeMapIndex.containsKey(new BytesWrapper(r.key))
+      anotherStorage.index.containsKey(new BytesWrapper(r.key))
 
       anotherStorage.get(r.key) == r
     }
@@ -83,7 +81,7 @@ class FileMappedBufferStorageSpec extends RoboSpecification {
     }
 
     then:
-    file.size() == totalSize + ByteBufferStorage.INITIAL_SIZE
+    file.size() == totalSize
   }
 
   @Unroll
@@ -110,7 +108,7 @@ class FileMappedBufferStorageSpec extends RoboSpecification {
     }
 
     then:
-    file.size() == ByteBufferStorage.INITIAL_SIZE + totalSize - removedSize
+    file.size() == totalSize - removedSize
 
     where:
     start | part
@@ -118,6 +116,4 @@ class FileMappedBufferStorageSpec extends RoboSpecification {
     250   | "middle"
     500   | "end"
   }
-
-
 }
