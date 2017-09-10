@@ -5,8 +5,6 @@ import com.noodle.encryption.Encryption;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class RandomAccessFileStorage implements Storage {
+
+  // Max size of the in-memory copy buffer. Currently 16 MB.
+  private static final int MAX_COPY_BUFFER_SIZE = 16 * 1024 * 1024;
 
   private final Encryption encryption;
   private final RandomAccessFile file;
@@ -88,14 +89,26 @@ public class RandomAccessFileStorage implements Storage {
           file.setLength(pos);
         } else {
           // In the middle or beginning.
-          long remainderSize = file.length() - pos;
-          final MappedByteBuffer buffer = file.getChannel().map(FileChannel.MapMode.READ_WRITE, pos, remainderSize);
 
-          buffer.position(encryptedSize);
-          buffer.compact();
-          buffer.force();
+          final int remainderSize = (int) (file.length() - pos);
+          byte[] copyBuffer = allocateCopyBuffer(remainderSize);
 
-          file.setLength(file.length() - encryptedSize);
+          long fromPos = pos + encryptedSize;
+          long toPos = pos;
+          long fileLength = file.length();
+
+          while (fromPos < fileLength) {
+            file.seek(fromPos);
+            int read = file.read(copyBuffer);
+            fromPos += read;
+
+            file.seek(toPos);
+            file.write(copyBuffer, 0, read);
+
+            toPos += read;
+          }
+
+          file.setLength(fileLength - encryptedSize);
 
           // Update indexes.
           for (BytesWrapper wrapper : index.keySet()) {
@@ -114,6 +127,20 @@ public class RandomAccessFileStorage implements Storage {
         throw new RuntimeException(e);
       }
     }
+  }
+
+  private byte[] allocateCopyBuffer(final int remainderSize) {
+    final Runtime runtime = Runtime.getRuntime();
+    final int usedMemory = (int) (runtime.totalMemory() - runtime.freeMemory());
+    final int availableMemory = (int) (runtime.maxMemory() - usedMemory);
+
+    // Set buffer size to be as much as remaining size of the file,
+    // but not bigger than a half of available heap and not bigger
+    // than MAX_COPY_BUFFER_SIZE limit.
+    int size = Math.min(remainderSize, availableMemory / 2);
+    size = Math.min(size, MAX_COPY_BUFFER_SIZE);
+
+    return new byte[size];
   }
 
   @Override
