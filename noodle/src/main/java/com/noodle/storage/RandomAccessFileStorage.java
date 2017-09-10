@@ -18,6 +18,7 @@ public class RandomAccessFileStorage implements Storage {
 
   // Max size of the in-memory copy buffer. Currently 16 MB.
   private static final int MAX_COPY_BUFFER_SIZE = 16 * 1024 * 1024;
+  private static final int MIN_COPY_BUFFER_SIZE = 1024;
 
   private final Encryption encryption;
   private final RandomAccessFile file;
@@ -139,6 +140,7 @@ public class RandomAccessFileStorage implements Storage {
     // than MAX_COPY_BUFFER_SIZE limit.
     int size = Math.min(remainderSize, availableMemory / 2);
     size = Math.min(size, MAX_COPY_BUFFER_SIZE);
+    size = Math.max(size, MIN_COPY_BUFFER_SIZE);
 
     return new byte[size];
   }
