@@ -7,6 +7,8 @@ import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -70,14 +72,47 @@ public class StoredConvertedCollection<T> implements Collection<T> {
     return new Result<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
-        long id = description.idOfItem(t);
-        if (id == 0) {
-          id = newSequenceId();
-          description.setItemId(t, id);
-        }
-        storage.put(toRecord(id, t));
+        putItemToCollection(t);
 
         return t;
+      }
+    });
+  }
+
+  @Override
+  public Result<List<T>> putAll(final T[] all) {
+    return new Result<>(new Callable<List<T>>() {
+      @Override
+      public List<T> call() throws Exception {
+        if (all == null) {
+          return Collections.emptyList();
+        }
+
+        for (T t : all) {
+          putItemToCollection(t);
+        }
+
+        return Arrays.asList(all);
+      }
+    });
+  }
+
+  @Override
+  public Result<List<T>> putAll(final Iterable<T> all) {
+    return new Result<>(new Callable<List<T>>() {
+      @Override
+      public List<T> call() throws Exception {
+        if (all == null) {
+          return Collections.emptyList();
+        }
+
+        final ArrayList<T> list = new ArrayList<>();
+        for (T t : all) {
+          putItemToCollection(t);
+          list.add(t);
+        }
+
+        return list;
       }
     });
   }
@@ -92,6 +127,29 @@ public class StoredConvertedCollection<T> implements Collection<T> {
         return removed != null
             ? converter.fromBytes(removed.getData(), clazz)
             : null;
+      }
+    });
+  }
+
+  @Override
+  public Result<Boolean> deleteAll() {
+    return new Result<>(new Callable<Boolean>() {
+      @Override
+      public Boolean call() throws Exception {
+        for (byte[] key : getAllCollectionKeys()) {
+          storage.remove(key);
+        }
+        return Boolean.TRUE;
+      }
+    });
+  }
+
+  @Override
+  public Result<Integer> count() {
+    return new Result<>(new Callable<Integer>() {
+      @Override
+      public Integer call() throws Exception {
+        return getAllCollectionKeys().size();
       }
     });
   }
@@ -114,6 +172,15 @@ public class StoredConvertedCollection<T> implements Collection<T> {
         return findItemsWith(predicate);
       }
     });
+  }
+
+  private void putItemToCollection(T t) {
+    long id = description.idOfItem(t);
+    if (id == 0) {
+      id = newSequenceId();
+      description.setItemId(t, id);
+    }
+    storage.put(toRecord(id, t));
   }
 
   private ArrayList<T> findItemsWith(final Predicate<T> predicate) {

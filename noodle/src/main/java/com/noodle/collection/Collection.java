@@ -35,6 +35,22 @@ public interface Collection<T> {
   Result<T> put(T t);
 
   /**
+   * Puts all elements with put.
+   *
+   * @param all items
+   * @return {@link Result}, that holds actual result of this operation.
+   */
+  Result<List<T>> putAll(T... all);
+
+  /**
+   * Puts all elements with put.
+   *
+   * @param all items
+   * @return {@link Result}, that holds actual result of this operation.
+   */
+  Result<List<T>> putAll(Iterable<T> all);
+
+  /**
    * Delete stored entity by its id. If not found, does nothing,
    * returning null in the result.
    *
@@ -43,6 +59,19 @@ public interface Collection<T> {
    */
   Result<T> delete(long id);
 
+  /**
+   * Deletes all items from this collection.
+   *
+   * @return {@link Result}, that holds actual result of this operation.
+   */
+  Result<Boolean> deleteAll();
+
+  /**
+   * Counts all items in this collection.
+   *
+   * @return {@link Result}, that holds the number of items in this collection.
+   */
+  Result<Integer> count();
 
   /**
    * Returns unmodifiable list of all items in this collection.

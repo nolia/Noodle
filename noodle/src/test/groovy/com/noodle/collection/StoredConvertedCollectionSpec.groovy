@@ -3,7 +3,9 @@ package com.noodle.collection
 import com.google.gson.Gson
 import com.noodle.converter.GsonConverter
 import com.noodle.description.Description
-import com.noodle.storage.FileMappedBufferStorage
+import com.noodle.encryption.NoEncryption
+import com.noodle.storage.RandomAccessFileStorage
+import com.noodle.storage.Storage
 import com.noodle.util.Data
 import org.robospock.RoboSpecification
 
@@ -11,7 +13,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
   private Description<Data> description
   private GsonConverter converter
-  private FileMappedBufferStorage storage
+  private Storage storage
   private StoredConvertedCollection<Data> collection
   private File file
 
@@ -22,7 +24,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
     converter = new GsonConverter(new Gson())
     file = new File("collection-test.noodle")
-    storage = new FileMappedBufferStorage(file)
+    storage = new RandomAccessFileStorage(file, new NoEncryption())
     collection = new StoredConvertedCollection<Data>(Data,
         description,
         converter,
@@ -32,6 +34,67 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
   void cleanup() {
     file.delete()
+  }
+
+  def "should add with put"() {
+    given:
+    def data = new Data(name: "Hello!")
+
+    when:
+    collection.put(data).now()
+
+    then:
+    data.id != 0
+  }
+
+  def "should update item with put"() {
+    given:
+    def data = new Data(name: "Hello!")
+    def putId = collection.put(data).now().id
+
+    when:
+    data.name = "Other"
+    collection.put(data).now()
+
+    then:
+    collection.count().now() == 1
+    collection.get(putId).now().name == "Other"
+  }
+
+  def "should add multiple items with putAll"() {
+    given:
+    def item1 = new Data(name: "item 1")
+    def item2 = new Data(name: "item 2")
+    def item3 = new Data(name: "item 3")
+
+    when:
+    collection.putAll(item1, item2, item3).now()
+
+    then:
+    collection.count().now() == 3
+
+    and:
+    item1.id != 0
+    item2.id != 0
+    item3.id != 0
+  }
+
+  def "should put items from iterable collection"() {
+    given:
+    def items = [
+        new Data(name: "item1"),
+        new Data(name: "item2"),
+        new Data(name: "item3")
+    ]
+
+    when:
+    collection.putAll(items).now()
+
+    then:
+    collection.count().now() == items.size()
+
+    and:
+    collection.all().now().containsAll(items)
   }
 
   def "should return null when item not found"() {
@@ -58,10 +121,12 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     def items = [new Data(name: "Hello"), new Data(name: ", "), new Data(name: " world"), new Data(name: "!")]
 
     when:
-    items.each {collection.put(it).now()}
+    items.each { collection.put(it).now() }
 
     then:
-    items == collection.all().now()
+    def listOfData = collection.all().now()
+    listOfData.containsAll(items)
+    listOfData.size() == items.size()
   }
 
   def "should delete item"() {
@@ -74,6 +139,38 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
     then:
     deleted == item
+  }
+
+  def "should delete all items"() {
+    given:
+    def items = [
+        new Data(name: "Item 1"),
+        new Data(name: "Item 2"),
+        new Data(name: "Item 3")
+    ]
+
+    and:
+    items.each { collection.put(it).now() }
+
+    expect:
+    collection.deleteAll().now()
+
+    and:
+    collection.all().now().isEmpty()
+  }
+
+  def "should count all items in a collection"(List items, int count) {
+    given:
+    items.each { collection.put(it).now() }
+
+    expect:
+    collection.count().now() == count
+
+    where:
+    items                    | count
+    []                       | 0
+    [new Data()]             | 1
+    [new Data(), new Data()] | 2
   }
 
   def "should filter items"() {
@@ -92,7 +189,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
     when:
     def filtered = collection.filter(
-        {it.name.startsWith("ab")} as Collection.Predicate<Data>
+        { it.name.startsWith("ab") } as Collection.Predicate<Data>
     ).now()
 
     then:
@@ -109,7 +206,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
       items << new Data(name: "a" * it)
     }
 
-    items.each {collection.put(it).now()}
+    items.each { collection.put(it).now() }
 
     when:
     def newCollection = new StoredConvertedCollection<Data>(Data,
