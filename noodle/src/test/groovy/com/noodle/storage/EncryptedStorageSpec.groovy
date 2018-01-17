@@ -24,16 +24,18 @@ class EncryptedStorageSpec extends RoboSpecification {
       return encrypt(data)
     }
   }
-  private ByteBufferStorage storage
+  private Storage storage
 
   void setup() {
-    storage = new ByteBufferStorage(xorEncryption)
+    def file = new File("test.noodle")
+    storage = new RandomAccessFileStorage(file, xorEncryption)
   }
 
   def "should use encryption when storing data"() {
     given:
     def mockEncryption = Mock(Encryption)
-    storage = new ByteBufferStorage(mockEncryption)
+    def file = new File("test.noodle")
+    storage = new RandomAccessFileStorage(file, mockEncryption)
 
     def keyBytes = "1".bytes
     def dataBytes = "a".bytes
@@ -50,7 +52,8 @@ class EncryptedStorageSpec extends RoboSpecification {
   def "should use decryption when getting data"() {
     given:
     def mockEncryption = Mock(Encryption)
-    storage = new ByteBufferStorage(mockEncryption)
+    def file = new File("test.noodle")
+    storage = new RandomAccessFileStorage(file, mockEncryption)
 
     def keyBytes = "1".bytes
     def dataBytes = "a".bytes

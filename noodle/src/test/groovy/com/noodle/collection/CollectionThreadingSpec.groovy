@@ -3,7 +3,9 @@ package com.noodle.collection
 import com.google.gson.Gson
 import com.noodle.converter.GsonConverter
 import com.noodle.description.Description
-import com.noodle.storage.FileMappedBufferStorage
+import com.noodle.encryption.NoEncryption
+import com.noodle.storage.RandomAccessFileStorage
+import com.noodle.storage.Storage
 import com.noodle.util.Data
 import org.robospock.RoboSpecification
 
@@ -15,7 +17,7 @@ class CollectionThreadingSpec extends RoboSpecification {
 
   private Description<Data> description
   private GsonConverter converter
-  private FileMappedBufferStorage storage
+  private RandomAccessFileStorage storage
   private StoredConvertedCollection<Data> collection
   private File file
 
@@ -26,7 +28,7 @@ class CollectionThreadingSpec extends RoboSpecification {
 
     converter = new GsonConverter(new Gson())
     file = new File("thread-test.noodle")
-    storage = new FileMappedBufferStorage(file)
+    storage = new RandomAccessFileStorage(file, new NoEncryption())
     collection = new StoredConvertedCollection<Data>(Data,
         description,
         converter,

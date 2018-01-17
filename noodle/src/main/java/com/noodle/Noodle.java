@@ -10,7 +10,6 @@ import com.noodle.converter.GsonConverter;
 import com.noodle.description.Description;
 import com.noodle.encryption.Encryption;
 import com.noodle.encryption.NoEncryption;
-import com.noodle.storage.FileMappedBufferStorage;
 import com.noodle.storage.RandomAccessFileStorage;
 import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
