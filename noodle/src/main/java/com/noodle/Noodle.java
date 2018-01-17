@@ -64,7 +64,7 @@ public class Noodle {
    */
   public Noodle(final Context context) {
     this(context,
-        new FileMappedBufferStorage(new File(defaultNoodleFile(context))),
+        new RandomAccessFileStorage(new File(defaultNoodleFile(context)), new NoEncryption()),
         new GsonConverter(new Gson())
     );
   }
