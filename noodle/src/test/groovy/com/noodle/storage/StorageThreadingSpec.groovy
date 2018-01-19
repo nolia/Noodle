@@ -14,7 +14,7 @@ class StorageThreadingSpec extends RoboSpecification {
   private File file
 
   void setup() {
-    file = new File("test.noodle")
+    file = new File("test-storage-thread.noodle")
     storage = new RandomAccessFileStorage(file, new NoEncryption())
   }
 
