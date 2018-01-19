@@ -47,6 +47,14 @@ dependencies {
   testCompile 'cglib:cglib-nodep:3.2.0'
 }
 
+tasks.withType(Test) {
+  testLogging {
+    showStandardStreams true
+    events "skipped", "failed"
+    exceptionFormat "full"
+  }
+}
+
 task sourcesJar(type: Jar) {
   from android.sourceSets.main.java.srcDirs
   classifier = 'sources'
