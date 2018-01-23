@@ -1,9 +1,8 @@
 package com.noodle.collection
 
 import com.google.gson.Gson
-import com.noodle.converter.GsonConverter
 import com.noodle.Description
-import com.noodle.encryption.NoEncryption
+import com.noodle.storage.Encryption
 import com.noodle.storage.RandomAccessFileStorage
 import com.noodle.storage.Storage
 import com.noodle.util.Data
@@ -24,7 +23,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
     converter = new GsonConverter(new Gson())
     file = new File("collection-test.noodle")
-    storage = new RandomAccessFileStorage(file, new NoEncryption())
+    storage = new RandomAccessFileStorage(file, Encryption.NO_ENCRYPTION)
     collection = new StoredConvertedCollection<Data>(Data,
         description,
         converter,

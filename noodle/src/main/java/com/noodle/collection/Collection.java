@@ -11,7 +11,7 @@ import java.util.List;
  * {@link com.noodle.Noodle#collectionOf(Class)} method to get one.
  *
  * @see com.noodle.Result
- * @see com.noodle.converter.Converter
+ * @see Converter
  * @see Description
  */
 public interface Collection<T> {

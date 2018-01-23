@@ -1,6 +1,7 @@
-package com.noodle.converter;
+package com.noodle.collection;
 
 import com.google.gson.Gson;
+import com.noodle.collection.Converter;
 
 /**
  * {@link Converter} based on {@link Gson}.

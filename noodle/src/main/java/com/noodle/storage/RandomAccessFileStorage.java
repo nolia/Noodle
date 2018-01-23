@@ -1,7 +1,5 @@
 package com.noodle.storage;
 
-import com.noodle.encryption.Encryption;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;

@@ -1,7 +1,8 @@
-package com.noodle.converter
+package com.noodle.collection
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.noodle.collection.GsonConverter
 import org.robospock.RoboSpecification
 
 /**

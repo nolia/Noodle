@@ -5,10 +5,9 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.noodle.collection.Collection;
 import com.noodle.collection.StoredConvertedCollection;
-import com.noodle.converter.Converter;
-import com.noodle.converter.GsonConverter;
-import com.noodle.encryption.Encryption;
-import com.noodle.encryption.NoEncryption;
+import com.noodle.collection.Converter;
+import com.noodle.collection.GsonConverter;
+import com.noodle.storage.Encryption;
 import com.noodle.storage.RandomAccessFileStorage;
 import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
@@ -62,7 +61,7 @@ public class Noodle {
    */
   public Noodle(final Context context) {
     this(context,
-        new RandomAccessFileStorage(new File(defaultNoodleFile(context)), new NoEncryption()),
+        new RandomAccessFileStorage(new File(defaultNoodleFile(context)), Encryption.NO_ENCRYPTION),
         new GsonConverter(new Gson())
     );
   }
@@ -273,7 +272,7 @@ public class Noodle {
     public Noodle build() {
       final Storage storage = new RandomAccessFileStorage(
           new File(filePath),
-          encryption != null ? encryption : new NoEncryption()
+          encryption != null ? encryption : Encryption.NO_ENCRYPTION
       );
       final Noodle noodle = new Noodle(
           context,

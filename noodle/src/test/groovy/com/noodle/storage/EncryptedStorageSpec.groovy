@@ -1,6 +1,5 @@
 package com.noodle.storage
 
-import com.noodle.encryption.Encryption
 import org.robospock.RoboSpecification
 
 /**

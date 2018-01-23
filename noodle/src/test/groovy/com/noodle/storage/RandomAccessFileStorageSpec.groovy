@@ -1,8 +1,7 @@
 package com.noodle.storage
 
-import com.noodle.encryption.NoEncryption
 import org.robospock.RoboSpecification
-import spock.lang.Unroll;
+import spock.lang.Unroll
 
 class RandomAccessFileStorageSpec extends RoboSpecification {
 
@@ -17,7 +16,7 @@ class RandomAccessFileStorageSpec extends RoboSpecification {
 
   void setup() {
     file = new File("test.noodle")
-    storage = new RandomAccessFileStorage(file, new NoEncryption())
+    storage = new RandomAccessFileStorage(file, Encryption.NO_ENCRYPTION)
   }
 
   void cleanup() {
@@ -51,7 +50,7 @@ class RandomAccessFileStorageSpec extends RoboSpecification {
     }
 
     and:
-    def anotherStorage = new RandomAccessFileStorage(file, new NoEncryption())
+    def anotherStorage = new RandomAccessFileStorage(file, Encryption.NO_ENCRYPTION)
 
     then:
     anotherStorage.index.size() == records.size()

@@ -1,4 +1,4 @@
-package com.noodle.encryption;
+package com.noodle.storage;
 
 /**
  * Interface for encrypting and decrypting data.
@@ -20,4 +20,19 @@ public interface Encryption {
    * @throws Exception
    */
   byte[] decrypt(byte[] data) throws Exception;
+
+  /**
+   * Does not encrypt data, just returns the input.
+   */
+  Encryption NO_ENCRYPTION = new Encryption() {
+    @Override
+    public byte[] encrypt(byte[] data) throws Exception {
+      return data;
+    }
+
+    @Override
+    public byte[] decrypt(byte[] data) throws Exception {
+      return data;
+    }
+  };
 }

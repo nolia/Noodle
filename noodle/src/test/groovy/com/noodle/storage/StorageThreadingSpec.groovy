@@ -1,6 +1,5 @@
 package com.noodle.storage
 
-import com.noodle.encryption.NoEncryption
 import org.robospock.RoboSpecification
 
 import static com.noodle.util.ThreadUtils.spawnThreads
@@ -15,7 +14,7 @@ class StorageThreadingSpec extends RoboSpecification {
 
   void setup() {
     file = new File("test-storage-thread.noodle")
-    storage = new RandomAccessFileStorage(file, new NoEncryption())
+    storage = new RandomAccessFileStorage(file, Encryption.NO_ENCRYPTION)
   }
 
   void cleanup() {

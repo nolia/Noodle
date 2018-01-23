@@ -1,4 +1,4 @@
-package com.noodle.converter;
+package com.noodle.collection;
 
 /**
  * Converts between byte[] and actual Java objects and
