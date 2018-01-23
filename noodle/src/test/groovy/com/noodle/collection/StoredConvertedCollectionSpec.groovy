@@ -2,7 +2,7 @@ package com.noodle.collection
 
 import com.google.gson.Gson
 import com.noodle.converter.GsonConverter
-import com.noodle.description.Description
+import com.noodle.Description
 import com.noodle.encryption.NoEncryption
 import com.noodle.storage.RandomAccessFileStorage
 import com.noodle.storage.Storage

@@ -2,7 +2,7 @@ package com.noodle.collection;
 
 import com.noodle.Result;
 import com.noodle.converter.Converter;
-import com.noodle.description.Description;
+import com.noodle.Description;
 import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
 

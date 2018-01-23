@@ -2,7 +2,6 @@ package com.noodle
 
 import android.content.Context
 import com.noodle.converter.Converter
-import com.noodle.description.Description
 import com.noodle.encryption.Encryption
 import com.noodle.util.AnnotatedData
 import com.noodle.util.Data

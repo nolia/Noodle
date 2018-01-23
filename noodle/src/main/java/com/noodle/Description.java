@@ -1,4 +1,4 @@
-package com.noodle.description;
+package com.noodle;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

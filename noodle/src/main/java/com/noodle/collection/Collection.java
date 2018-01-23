@@ -1,5 +1,6 @@
 package com.noodle.collection;
 
+import com.noodle.Description;
 import com.noodle.Result;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  *
  * @see com.noodle.Result
  * @see com.noodle.converter.Converter
- * @see com.noodle.description.Description
+ * @see Description
  */
 public interface Collection<T> {
 

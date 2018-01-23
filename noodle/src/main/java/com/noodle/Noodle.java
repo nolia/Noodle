@@ -7,7 +7,6 @@ import com.noodle.collection.Collection;
 import com.noodle.collection.StoredConvertedCollection;
 import com.noodle.converter.Converter;
 import com.noodle.converter.GsonConverter;
-import com.noodle.description.Description;
 import com.noodle.encryption.Encryption;
 import com.noodle.encryption.NoEncryption;
 import com.noodle.storage.RandomAccessFileStorage;

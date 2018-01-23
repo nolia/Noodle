@@ -24,11 +24,18 @@ class EncryptedStorageSpec extends RoboSpecification {
       return encrypt(data)
     }
   }
+
   private Storage storage
+  private File file
 
   void setup() {
-    def file = new File("test.noodle")
-    storage = new RandomAccessFileStorage(file, xorEncryption)
+    file = new File("test.noodle")
+    storage = new RandomAccessFileStorage(this.file, xorEncryption)
+  }
+
+  void cleanup() {
+    storage = null
+    file.delete()
   }
 
   def "should use encryption when storing data"() {

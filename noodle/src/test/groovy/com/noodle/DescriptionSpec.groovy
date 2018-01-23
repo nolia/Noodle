@@ -1,4 +1,4 @@
-package com.noodle.description
+package com.noodle
 
 import com.noodle.util.Data
 import org.robospock.RoboSpecification

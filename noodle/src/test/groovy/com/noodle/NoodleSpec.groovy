@@ -1,7 +1,6 @@
 package com.noodle
 
 import android.content.Context
-import com.noodle.description.Description
 import com.noodle.storage.Record
 import com.noodle.storage.Storage
 import com.noodle.util.Data
