@@ -248,7 +248,7 @@ public class Noodle {
      */
     public <T> Builder addType(final Class<T> type) {
       Field idField = null;
-      for (Field field : type.getFields()) {
+      for (Field field : type.getDeclaredFields()) {
         for (Annotation annotation : field.getAnnotations()) {
           if (annotation.annotationType() == Id.class) {
             if (idField != null) {

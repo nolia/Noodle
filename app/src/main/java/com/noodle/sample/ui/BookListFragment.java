@@ -134,15 +134,15 @@ public class BookListFragment extends Fragment {
     public void onBindViewHolder(final BookViewHolder holder, final int position) {
       final Book book = bookList.get(position);
 
-      holder.bookTitle.setText(book.title);
-      holder.bookAuthor.setText(book.authorName);
+      holder.bookTitle.setText(book.getTitle());
+      holder.bookAuthor.setText(book.getAuthorName());
 
       holder.itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
           final EditBookFragment editFragment = new EditBookFragment();
           final Bundle args = new Bundle();
-          args.putLong(EditBookFragment.ARG_BOOK_ID, book.id);
+          args.putLong(EditBookFragment.ARG_BOOK_ID, book.getId());
           editFragment.setArguments(args);
 
           editFragment.show(getFragmentManager(), "edit_book");

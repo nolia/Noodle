@@ -67,7 +67,7 @@ public class EditBookFragment extends AppCompatDialogFragment {
         onDeleteClicked();
       }
     });
-    deleteButton.setVisibility(book.id > 0 ? View.VISIBLE : View.GONE);
+    deleteButton.setVisibility(book.getId() > 0 ? View.VISIBLE : View.GONE);
 
     view.findViewById(R.id.buttonSave).setOnClickListener(new View.OnClickListener() {
       @Override
@@ -76,8 +76,8 @@ public class EditBookFragment extends AppCompatDialogFragment {
       }
     });
 
-    inputTitle.setText(book.title);
-    inputAuthor.setText(book.authorName);
+    inputTitle.setText(book.getTitle());
+    inputAuthor.setText(book.getAuthorName());
   }
 
   @NonNull
@@ -96,8 +96,8 @@ public class EditBookFragment extends AppCompatDialogFragment {
       return;
     }
 
-    book.title = title;
-    book.authorName = author;
+    book.setTitle(title);
+    book.setAuthorName(author);
 
     bookManager.addBook(book);
     dismiss();

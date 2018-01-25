@@ -153,7 +153,7 @@ public class Description<T> {
 
     public ReflectionIdField(final Class<T> clazz, final String fieldName) {
       try {
-        field = clazz.getField(fieldName);
+        field = clazz.getDeclaredField(fieldName);
 
         if (Modifier.isFinal(field.getModifiers())) {
           throw new RuntimeException("id field cannot be final!");
