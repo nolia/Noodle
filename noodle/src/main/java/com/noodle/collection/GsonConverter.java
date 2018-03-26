@@ -1,14 +1,13 @@
 package com.noodle.collection;
 
 import com.google.gson.Gson;
-import com.noodle.collection.Converter;
 
 /**
  * {@link Converter} based on {@link Gson}.
  */
 public class GsonConverter implements Converter {
 
-  Gson gson;
+  private Gson gson;
 
   public GsonConverter(final Gson gson) {
     this.gson = gson;
