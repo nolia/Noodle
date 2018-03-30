@@ -214,6 +214,6 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
         storage)
 
     then:
-    newCollection.sequenceId == 5
+    newCollection.sequenceId.get() == 5
   }
 }

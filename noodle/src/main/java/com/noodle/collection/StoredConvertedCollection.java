@@ -1,7 +1,7 @@
 package com.noodle.collection;
 
-import com.noodle.Result;
 import com.noodle.Description;
+import com.noodle.Result;
 import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
 
@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Primary {@link Collection} implementation.
@@ -22,7 +23,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   final Converter converter;
   final Storage storage;
 
-  long sequenceId = 0;
+  final AtomicLong sequenceId = new AtomicLong(0L);
 
   final Predicate<T> every = new Predicate<T>() {
     @Override
@@ -43,8 +44,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
     for (byte[] key : getAllCollectionKeys()) {
       final String idStr = new String(key).split(":")[1];
       final Long id = Long.valueOf(idStr);
-      if (id != null && sequenceId < id) {
-        sequenceId = id;
+      if (id != null && sequenceId.get() < id) {
+        sequenceId.set(id);
       }
     }
   }
@@ -215,7 +216,6 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   private synchronized long newSequenceId() {
-    sequenceId += 1;
-    return sequenceId;
+    return sequenceId.incrementAndGet();
   }
 }
