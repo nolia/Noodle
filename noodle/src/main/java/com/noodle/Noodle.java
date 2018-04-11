@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.noodle.collection.Collection;
-import com.noodle.collection.StoredConvertedCollection;
 import com.noodle.collection.Converter;
 import com.noodle.collection.GsonConverter;
+import com.noodle.collection.StoredConvertedCollection;
 import com.noodle.storage.Encryption;
 import com.noodle.storage.RandomAccessFileStorage;
 import com.noodle.storage.Record;
@@ -126,10 +126,10 @@ public class Noodle {
    * @param key key, that object was previously stored with
    * @param type class of object to parse
    * @param <T> type of the object
-   * @return Result, wrapping wanted object, or null if not found
+   * @return Call, wrapping wanted object, or null if not found
    */
-  public <T> Result<T> get(final String key, final Class<T> type) {
-    return new Result<>(new Callable<T>() {
+  public <T> Call<T> get(final String key, final Class<T> type) {
+    return new Call<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         final byte[] keyBytes = keyValueKey(key);
@@ -147,10 +147,10 @@ public class Noodle {
    * @param key key that object will be stored with
    * @param value object
    * @param <T> object type
-   * @return Result, wrapping the same object
+   * @return Call, wrapping the same object
    */
-  public <T> Result<T> put(final String key, final T value) {
-    return new Result<>(new Callable<T>() {
+  public <T> Call<T> put(final String key, final T value) {
+    return new Call<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         final byte[] keyBytes = keyValueKey(key);
@@ -164,11 +164,11 @@ public class Noodle {
   /**
    * Deletes object from storage
    * @param key key to delete object by
-   * @return Result, wrapping boolean, indicating whether object was deleted
+   * @return Call, wrapping boolean, indicating whether object was deleted
    * by this operation
    */
-  public Result<Boolean> delete(final String key) {
-    return new Result<>(new Callable<Boolean>() {
+  public Call<Boolean> delete(final String key) {
+    return new Call<>(new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
         return storage.remove(keyValueKey(key)) != null;

@@ -1,7 +1,7 @@
 package com.noodle.collection;
 
+import com.noodle.Call;
 import com.noodle.Description;
-import com.noodle.Result;
 
 import java.util.List;
 
@@ -10,20 +10,20 @@ import java.util.List;
  * Usually you don't construct collections on your own, but use
  * {@link com.noodle.Noodle#collectionOf(Class)} method to get one.
  *
- * @see com.noodle.Result
+ * @see Call
  * @see Converter
  * @see Description
  */
 public interface Collection<T> {
 
   /**
-   * Get the item by it's id. Returns {@link Result},
+   * Get the item by it's id. Returns {@link Call},
    * holding this item or null, if not found.
    *
    * @param id of the given item, should be positive
-   * @return {@link Result} that wraps item or null
+   * @return {@link Call} that wraps item or null
    */
-  Result<T> get(long id);
+  Call<T> getAsync(long id);
 
   /**
    * Store the entity in the collection. If it does not have an id,
@@ -31,66 +31,66 @@ public interface Collection<T> {
    * will be replaced
    *
    * @param t entity to store
-   * @return {@link Result} that wraps an updated item
+   * @return {@link Call} that wraps an updated item
    */
-  Result<T> put(T t);
+  Call<T> putAsync(T t);
 
   /**
    * Puts all elements with put.
    *
    * @param all items
-   * @return {@link Result}, that holds actual result of this operation.
+   * @return {@link Call}, that holds actual result of this operation.
    */
-  Result<List<T>> putAll(T... all);
+  Call<List<T>> putAllAsync(T... all);
 
   /**
    * Puts all elements with put.
    *
    * @param all items
-   * @return {@link Result}, that holds actual result of this operation.
+   * @return {@link Call}, that holds actual result of this operation.
    */
-  Result<List<T>> putAll(Iterable<T> all);
+  Call<List<T>> putAllAsync(Iterable<T> all);
 
   /**
    * Delete stored entity by its id. If not found, does nothing,
    * returning null in the result.
    *
    * @param id of the item to delete
-   * @return {@link Result} that wraps deleted item or null, if not found
+   * @return {@link Call} that wraps deleted item or null, if not found
    */
-  Result<T> delete(long id);
+  Call<T> deleteAsync(long id);
 
   /**
    * Deletes all items from this collection.
    *
-   * @return {@link Result}, that holds actual result of this operation.
+   * @return {@link Call}, that holds actual result of this operation.
    */
-  Result<Boolean> deleteAll();
+  Call<Boolean> clearAsync();
 
   /**
    * Counts all items in this collection.
    *
-   * @return {@link Result}, that holds the number of items in this collection.
+   * @return {@link Call}, that holds the number of items in this collection.
    */
-  Result<Integer> count();
+  Call<Integer> countAsync();
 
   /**
    * Returns unmodifiable list of all items in this collection.
    *
-   * @return {@link Result}, that holds unmodifiable list
+   * @return {@link Call}, that holds unmodifiable list
    * of all items in this collection.
    */
-  Result<List<T>> all();
+  Call<List<T>> allAsync();
 
   /**
    * Returns unmodifiable list of all items in this collection,
    * that satisfy given predicate.
    *
    * @param predicate test function to filter items
-   * @return {@link Result}, with unmodifiable list of all items,
+   * @return {@link Call}, with unmodifiable list of all items,
    * that satisfy given predicate.
    */
-  Result<List<T>> filter(Predicate<T> predicate);
+  Call<List<T>> filterAsync(Predicate<T> predicate);
 
   /**
    * Test function, used to filter items.

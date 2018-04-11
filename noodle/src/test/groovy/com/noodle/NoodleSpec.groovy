@@ -72,7 +72,7 @@ class NoodleSpec extends RoboSpecification {
     noodle.storage = mockStorage
 
     when:
-    noodle.put(key, value).now()
+    noodle.put(key, value).value()
 
     then:
     1 * mockStorage.put({ it.key == noodle.keyValueKey(key) && it.data == noodle.converter.toBytes(value) })
@@ -88,7 +88,7 @@ class NoodleSpec extends RoboSpecification {
     noodle.storage = mockStorage
 
     when:
-    String value = noodle.get(key, String).now()
+    String value = noodle.get(key, String).value()
 
     then:
     1 * mockStorage.get(noodle.keyValueKey(key)) >> record
@@ -103,7 +103,7 @@ class NoodleSpec extends RoboSpecification {
     noodle.storage = mockStorage
 
     when:
-    String notHere = noodle.get(notInTheStorage, String).now()
+    String notHere = noodle.get(notInTheStorage, String).value()
 
     then:
     1 * mockStorage.get(noodle.keyValueKey(notInTheStorage))
@@ -120,7 +120,7 @@ class NoodleSpec extends RoboSpecification {
     noodle.storage = mockStorage
 
     when:
-    Boolean deleted = noodle.delete(key).now()
+    Boolean deleted = noodle.delete(key).value()
 
     then:
     deleted
@@ -135,7 +135,7 @@ class NoodleSpec extends RoboSpecification {
     noodle.storage = mockStorage
 
     when:
-    Boolean deleted = noodle.delete(key).now()
+    Boolean deleted = noodle.delete(key).value()
 
     then:
     !deleted

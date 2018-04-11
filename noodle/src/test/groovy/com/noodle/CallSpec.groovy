@@ -8,23 +8,23 @@ import java.util.concurrent.Executor
 /**
  *
  */
-class ResultSpec extends RoboSpecification {
+class CallSpec extends RoboSpecification {
 
-  private Result<String> result
+  private Call<String> result
   private executor
 
   void setup() {
-    result = new Result<String>({ "hello, world!" } as Callable<String>)
+    result = new Call<String>({ "hello, world!" } as Callable<String>)
     executor = { it.run() } as Executor
   }
 
   def "should call action when now() is called"() {
     given:
     def mockAction = Mock(Callable)
-    result = new Result<>(mockAction)
+    result = new Call<>(mockAction)
 
     when:
-    result.now()
+    result.value()
 
     then:
     1 * mockAction.call()
@@ -38,7 +38,7 @@ class ResultSpec extends RoboSpecification {
     } as Callable<String>
 
     when:
-    def actual = new Result<>(callable).now()
+    def actual = new Call<>(callable).value()
 
     then:
     actual == expected
@@ -51,7 +51,7 @@ class ResultSpec extends RoboSpecification {
     } as Callable
 
     when:
-    new Result<>(callable).now()
+    new Call<>(callable).value()
 
     then:
     RuntimeException e = thrown()
@@ -79,7 +79,7 @@ class ResultSpec extends RoboSpecification {
 
   def "should notify callback on result"() {
     given:
-    def callback = Mock(Result.Callback)
+    def callback = Mock(Call.Callback)
 
     when:
     result.executeOn(this.executor).withCallback(callback).get()
@@ -91,8 +91,8 @@ class ResultSpec extends RoboSpecification {
 
   def "should notify callback on exception"() {
     given:
-    def callback = Mock(Result.Callback)
-    result = new Result<>({ throw UnsupportedOperationException("Ha!") } as Callable)
+    def callback = Mock(Call.Callback)
+    result = new Call<>({ throw UnsupportedOperationException("Ha!") } as Callable)
 
     when:
     result.executeOn(this.executor).withCallback(callback).get()
@@ -105,7 +105,7 @@ class ResultSpec extends RoboSpecification {
   def "should convert to rx Observable"() {
     given:
     def mockAction = Mock(Callable)
-    result = new Result<>(mockAction)
+    result = new Call<>(mockAction)
 
     when:
     def received = null
@@ -130,7 +130,7 @@ class ResultSpec extends RoboSpecification {
 
     when:
     Throwable error
-    new Result<>(callable)
+    new Call<>(callable)
         .toRxObservable()
         .subscribe({}, { error = it }, {})
 

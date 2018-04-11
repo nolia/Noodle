@@ -13,7 +13,8 @@ public class Description<T> {
   final GetIdOperator<T> getIdOperator;
   final SetIdOperator<T> setIdOperator;
 
-  public Description(final Class<T> clazz, final GetIdOperator<T> getIdOperator,
+  public Description(final Class<T> clazz,
+                     final GetIdOperator<T> getIdOperator,
                      final SetIdOperator<T> setIdOperator) {
     this.clazz = clazz;
     this.getIdOperator = getIdOperator;

@@ -40,46 +40,46 @@ class CollectionThreadingSpec extends RoboSpecification {
   def "write new records in 10 threads at a time"() {
     when:
     spawnThreads(10) { number ->
-      collection.put(new Data(name: number)).now()
+      collection.putAsync(new Data(name: number)).value()
     }.await(2, TimeUnit.SECONDS)
 
     then:
     println '\nResults:'
-    collection.all().now().sort({ a, b -> a.id.compareTo(b.id) }).each {
+    collection.allAsync().value().sort({ a, b -> a.id.compareTo(b.id) }).each {
       print "$it \n"
     }
   }
 
   def "should handle edit one item from 10 threads"() {
     given:
-    def id = collection.put(new Data(name: "")).now().id
+    def id = collection.putAsync(new Data(name: "")).value().id
 
     when:
     spawnThreads(10) { Integer number ->
-      def data = collection.get(id).now()
+      def data = collection.getAsync(id).value()
       data.name += number.toString()
-      collection.put(data).now()
+      collection.putAsync(data).value()
     }.await(2, TimeUnit.SECONDS)
 
     then:
     println("\nResult")
-    println collection.get(id).now()
+    println collection.getAsync(id).value()
   }
 
   def "should sync on adding item"() {
     when:
     spawnThreads(10) { number ->
-      def data = collection.get(123).now()
+      def data = collection.getAsync(123).value()
       if (data == null) {
         data = new Data(id: 123, name: "From thread: $number")
-        collection.put(data).now()
+        collection.putAsync(data).value()
       }
 
     }.await(2, TimeUnit.SECONDS)
 
     then:
-    println "\ndata = ${collection.get(123).now()}"
-    collection.all().now().size() == 1
+    println "\ndata = ${collection.getAsync(123).value()}"
+    collection.allAsync().value().size() == 1
 
   }
 

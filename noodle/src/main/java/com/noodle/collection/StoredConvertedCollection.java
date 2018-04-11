@@ -1,7 +1,7 @@
 package com.noodle.collection;
 
+import com.noodle.Call;
 import com.noodle.Description;
-import com.noodle.Result;
 import com.noodle.storage.Record;
 import com.noodle.storage.Storage;
 
@@ -52,8 +52,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
 
   @Override
-  public Result<T> get(final long id) {
-    return new Result<>(new Callable<T>() {
+  public Call<T> getAsync(final long id) {
+    return new Call<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         final byte[] key = getKey(id);
@@ -68,8 +68,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   @Override
-  public Result<T> put(final T t) {
-    return new Result<>(new Callable<T>() {
+  public Call<T> putAsync(final T t) {
+    return new Call<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         putItemToCollection(t);
@@ -80,8 +80,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   @Override
-  public Result<List<T>> putAll(final T[] all) {
-    return new Result<>(new Callable<List<T>>() {
+  public Call<List<T>> putAllAsync(final T[] all) {
+    return new Call<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
         if (all == null) {
@@ -98,8 +98,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   @Override
-  public Result<List<T>> putAll(final Iterable<T> all) {
-    return new Result<>(new Callable<List<T>>() {
+  public Call<List<T>> putAllAsync(final Iterable<T> all) {
+    return new Call<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
         if (all == null) {
@@ -118,8 +118,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   @Override
-  public Result<T> delete(final long id) {
-    return new Result<>(new Callable<T>() {
+  public Call<T> deleteAsync(final long id) {
+    return new Call<>(new Callable<T>() {
       @Override
       public T call() throws Exception {
         final byte[] key = getKey(id);
@@ -132,8 +132,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   @Override
-  public Result<Boolean> deleteAll() {
-    return new Result<>(new Callable<Boolean>() {
+  public Call<Boolean> clearAsync() {
+    return new Call<>(new Callable<Boolean>() {
       @Override
       public Boolean call() throws Exception {
         for (byte[] key : getAllCollectionKeys()) {
@@ -145,8 +145,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   @Override
-  public Result<Integer> count() {
-    return new Result<>(new Callable<Integer>() {
+  public Call<Integer> countAsync() {
+    return new Call<>(new Callable<Integer>() {
       @Override
       public Integer call() throws Exception {
         return getAllCollectionKeys().size();
@@ -155,8 +155,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   @Override
-  public Result<List<T>> all() {
-    return new Result<>(new Callable<List<T>>() {
+  public Call<List<T>> allAsync() {
+    return new Call<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
         return findItemsWith(every);
@@ -165,8 +165,8 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   @Override
-  public Result<List<T>> filter(final Predicate<T> predicate) {
-    return new Result<>(new Callable<List<T>>() {
+  public Call<List<T>> filterAsync(final Predicate<T> predicate) {
+    return new Call<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
         return findItemsWith(predicate);

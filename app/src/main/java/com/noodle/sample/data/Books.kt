@@ -30,7 +30,7 @@ class BookManager(context: Context) {
     private val collection: Collection<Book>
 
     val books: List<Book>
-        get() = collection.all().now()
+        get() = collection.allAsync().value()
 
     init {
 
@@ -38,7 +38,7 @@ class BookManager(context: Context) {
     }
 
     fun addBook(book: Book) {
-        collection.put(book).now()
+        collection.putAsync(book).value()
         if (listener != null) {
             listener!!.onBooksChanged()
         }
@@ -49,26 +49,22 @@ class BookManager(context: Context) {
     }
 
     fun clear() {
-        for (book in collection.all().now()) {
-            collection.delete(book.id).now()
-        }
-
+        collection.clearAsync().value()
         listener?.onBooksChanged()
-
     }
 
     fun getBook(id: Long): Book {
-        return collection.get(id).now()
+        return collection.getAsync(id).value()
     }
 
     fun deleteBook(book: Book) {
-        collection.delete(book.id).now()
+        collection.deleteAsync(book.id).value()
 
         listener?.onBooksChanged()
     }
 
     fun search(query: String): List<Book> {
-        return collection.filter { book -> book.title!!.contains(query) || book.authorName!!.contains(query) }.now()
+        return collection.filterAsync { book -> book.title!!.contains(query) || book.authorName!!.contains(query) }.value()
     }
 
     interface Listener {

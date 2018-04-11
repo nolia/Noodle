@@ -40,7 +40,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     def data = new Data(name: "Hello!")
 
     when:
-    collection.put(data).now()
+    collection.putAsync(data).value()
 
     then:
     data.id != 0
@@ -49,15 +49,15 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
   def "should update item with put"() {
     given:
     def data = new Data(name: "Hello!")
-    def putId = collection.put(data).now().id
+    def putId = collection.putAsync(data).value().id
 
     when:
     data.name = "Other"
-    collection.put(data).now()
+    collection.putAsync(data).value()
 
     then:
-    collection.count().now() == 1
-    collection.get(putId).now().name == "Other"
+    collection.countAsync().value() == 1
+    collection.getAsync(putId).value().name == "Other"
   }
 
   def "should add multiple items with putAll"() {
@@ -67,10 +67,10 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     def item3 = new Data(name: "item 3")
 
     when:
-    collection.putAll(item1, item2, item3).now()
+    collection.putAllAsync(item1, item2, item3).value()
 
     then:
-    collection.count().now() == 3
+    collection.countAsync().value() == 3
 
     and:
     item1.id != 0
@@ -87,18 +87,18 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     ]
 
     when:
-    collection.putAll(items).now()
+    collection.putAllAsync(items).value()
 
     then:
-    collection.count().now() == items.size()
+    collection.countAsync().value() == items.size()
 
     and:
-    collection.all().now().containsAll(items)
+    collection.allAsync().value().containsAll(items)
   }
 
   def "should return null when item not found"() {
     expect:
-    collection.get(345).now() == null
+    collection.getAsync(345).value() == null
   }
 
   def "add and get some item"() {
@@ -106,13 +106,13 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     def data = new Data(name: "Oliver")
 
     when:
-    def saved = collection.put(data).now()
+    def saved = collection.putAsync(data).value()
 
     then:
     saved.id != 0
 
     and:
-    data == collection.get(saved.id).now()
+    data == collection.getAsync(saved.id).value()
   }
 
   def "should get all items that were put previously"() {
@@ -120,10 +120,10 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     def items = [new Data(name: "Hello"), new Data(name: ", "), new Data(name: " world"), new Data(name: "!")]
 
     when:
-    items.each { collection.put(it).now() }
+    items.each { collection.putAsync(it).value() }
 
     then:
-    def listOfData = collection.all().now()
+    def listOfData = collection.allAsync().value()
     listOfData.containsAll(items)
     listOfData.size() == items.size()
   }
@@ -131,10 +131,10 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
   def "should delete item"() {
     given:
     def item = new Data(name: "You shall not pass!")
-    collection.put(item).now()
+    collection.putAsync(item).value()
 
     when:
-    def deleted = collection.delete(item.id).now()
+    def deleted = collection.deleteAsync(item.id).value()
 
     then:
     deleted == item
@@ -149,21 +149,21 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     ]
 
     and:
-    items.each { collection.put(it).now() }
+    items.each { collection.putAsync(it).value() }
 
     expect:
-    collection.deleteAll().now()
+    collection.clearAsync().value()
 
     and:
-    collection.all().now().isEmpty()
+    collection.allAsync().value().isEmpty()
   }
 
   def "should count all items in a collection"(List items, int count) {
     given:
-    items.each { collection.put(it).now() }
+    items.each { collection.putAsync(it).value() }
 
     expect:
-    collection.count().now() == count
+    collection.countAsync().value() == count
 
     where:
     items                    | count
@@ -183,13 +183,13 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
 
     and:
     items.each {
-      collection.put(it).now()
+      collection.putAsync(it).value()
     }
 
     when:
-    def filtered = collection.filter(
+    def filtered = collection.filterAsync(
         { it.name.startsWith("ab") } as Collection.Predicate<Data>
-    ).now()
+    ).value()
 
     then:
     filtered.size() == 3
@@ -205,7 +205,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
       items << new Data(name: "a" * it)
     }
 
-    items.each { collection.put(it).now() }
+    items.each { collection.putAsync(it).value() }
 
     when:
     def newCollection = new StoredConvertedCollection<Data>(Data,
