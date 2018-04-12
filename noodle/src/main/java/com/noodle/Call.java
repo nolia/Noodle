@@ -12,8 +12,7 @@ import io.reactivex.Observable;
 public class Call<K> {
 
   private final Callable<K> action;
-  Executor executor;
-  Callback<K> callback;
+  private Executor executor;
 
   /**
    * Creates new Call.
@@ -28,7 +27,7 @@ public class Call<K> {
    * Synchronously runs all operations backing this result object
    * and returns the item.<br/>
    * <b>Note: this operation may throw {@link RuntimeException}. To be safe,
-   * you can use callback and {@link #get()} method.</b>
+   * you can use callback and {@link #get(Callback)} method.</b>
    *
    * @return item, that this result holds
    */
@@ -41,7 +40,7 @@ public class Call<K> {
   }
 
   /**
-   * Sets the {@link Executor} to run {@link #get()} operation on.
+   * Sets the {@link Executor} to run operation on.
    * Callback will be also called on this executor.
    *
    * @param executor executor to run operations on
@@ -53,22 +52,14 @@ public class Call<K> {
   }
 
   /**
-   * Sets a callback to this Call.
+   * Performs operations on specified executor.
+   * Will throw a {@link RuntimeException} if executor was
+   * not previously specified.
    *
    * @param callback callback to be called when result is ready
    * @return this Call instance
    */
-  public Call<K> withCallback(final Callback<K> callback) {
-    this.callback = callback;
-    return this;
-  }
-
-  /**
-   * Performs operations on specified executor.
-   * Will throw a {@link RuntimeException} if executor was
-   * not previously specified .
-   */
-  public void get() {
+  public Call<K> get(final Callback<K> callback) {
     if (executor == null) {
       throw new RuntimeException("Executor is not specified!");
     }
@@ -88,6 +79,8 @@ public class Call<K> {
         }
       }
     });
+
+    return this;
   }
 
   /**
@@ -103,6 +96,7 @@ public class Call<K> {
 
   /**
    * Callback of the result.
+   *
    * @param <T>
    */
   public interface Callback<T> {

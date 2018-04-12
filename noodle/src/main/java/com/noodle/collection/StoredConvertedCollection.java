@@ -51,115 +51,85 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
 
-  @Override
-  public Call<T> getAsync(final long id) {
-    return new Call<>(new Callable<T>() {
-      @Override
-      public T call() throws Exception {
-        final byte[] key = getKey(id);
-        final Record record = storage.get(key);
-        if (record == null) {
-          return null;
-        }
+  //region sync methods
 
-        return converter.fromBytes(record.getData(), clazz);
-      }
-    });
+  @Override
+  public List<T> getAll() {
+    return findItemsWith(every);
   }
 
   @Override
-  public Call<T> putAsync(final T t) {
-    return new Call<>(new Callable<T>() {
-      @Override
-      public T call() throws Exception {
-        putItemToCollection(t);
-
-        return t;
-      }
-    });
+  public List<T> filter(final Predicate<T> predicate) {
+    return findItemsWith(predicate);
   }
 
   @Override
-  public Call<List<T>> putAllAsync(final T[] all) {
+  public T get(final long id) {
+    final byte[] key = getKey(id);
+    final Record record = storage.get(key);
+    if (record == null) {
+      return null;
+    }
+    return converter.fromBytes(record.getData(), clazz);
+  }
+
+  @Override
+  public T put(final T t) {
+    putItemToCollection(t);
+    return t;
+  }
+
+  @Override
+  public List<T> putAll(final T... all) {
+    return putAll(Arrays.asList(all));
+  }
+
+  @Override
+  public List<T> putAll(final Iterable<T> all) {
+    if (all == null) {
+      return Collections.emptyList();
+    }
+
+    final ArrayList<T> list = new ArrayList<>();
+    for (T t : all) {
+      putItemToCollection(t);
+      list.add(t);
+    }
+
+    return list;
+  }
+
+  @Override
+  public T delete(final long id) {
+    final byte[] key = getKey(id);
+    final Record removed = storage.remove(key);
+    return removed != null
+        ? converter.fromBytes(removed.getData(), clazz)
+        : null;
+  }
+
+  @Override
+  public boolean clear() {
+    for (byte[] key : getAllCollectionKeys()) {
+      storage.remove(key);
+    }
+    return true;
+  }
+
+  @Override
+  public int count() {
+    return getAllCollectionKeys().size();
+  }
+
+
+  //endregion
+
+  @Override
+  public Call<List<T>> getAllAsync() {
     return new Call<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
-        if (all == null) {
-          return Collections.emptyList();
-        }
-
-        for (T t : all) {
-          putItemToCollection(t);
-        }
-
-        return Arrays.asList(all);
-      }
-    });
-  }
-
-  @Override
-  public Call<List<T>> putAllAsync(final Iterable<T> all) {
-    return new Call<>(new Callable<List<T>>() {
-      @Override
-      public List<T> call() throws Exception {
-        if (all == null) {
-          return Collections.emptyList();
-        }
-
-        final ArrayList<T> list = new ArrayList<>();
-        for (T t : all) {
-          putItemToCollection(t);
-          list.add(t);
-        }
-
-        return list;
-      }
-    });
-  }
-
-  @Override
-  public Call<T> deleteAsync(final long id) {
-    return new Call<>(new Callable<T>() {
-      @Override
-      public T call() throws Exception {
-        final byte[] key = getKey(id);
-        final Record removed = storage.remove(key);
-        return removed != null
-            ? converter.fromBytes(removed.getData(), clazz)
-            : null;
-      }
-    });
-  }
-
-  @Override
-  public Call<Boolean> clearAsync() {
-    return new Call<>(new Callable<Boolean>() {
-      @Override
-      public Boolean call() throws Exception {
-        for (byte[] key : getAllCollectionKeys()) {
-          storage.remove(key);
-        }
-        return Boolean.TRUE;
-      }
-    });
-  }
-
-  @Override
-  public Call<Integer> countAsync() {
-    return new Call<>(new Callable<Integer>() {
-      @Override
-      public Integer call() throws Exception {
-        return getAllCollectionKeys().size();
-      }
-    });
-  }
-
-  @Override
-  public Call<List<T>> allAsync() {
-    return new Call<>(new Callable<List<T>>() {
-      @Override
-      public List<T> call() throws Exception {
-        return findItemsWith(every);
+        return getAll();
       }
     });
   }
@@ -169,7 +139,77 @@ public class StoredConvertedCollection<T> implements Collection<T> {
     return new Call<>(new Callable<List<T>>() {
       @Override
       public List<T> call() throws Exception {
-        return findItemsWith(predicate);
+        return filter(predicate);
+      }
+    });
+  }
+
+  @Override
+  public Call<T> getAsync(final long id) {
+    return new Call<>(new Callable<T>() {
+      @Override
+      public T call() throws Exception {
+        return get(id);
+      }
+    });
+  }
+
+  @Override
+  public Call<T> putAsync(final T t) {
+    return new Call<>(new Callable<T>() {
+      @Override
+      public T call() throws Exception {
+        return put(t);
+      }
+    });
+  }
+
+  @Override
+  public Call<List<T>> putAllAsync(final T[] all) {
+    return new Call<>(new Callable<List<T>>() {
+      @Override
+      public List<T> call() throws Exception {
+        return putAll(all);
+      }
+    });
+  }
+
+  @Override
+  public Call<List<T>> putAllAsync(final Iterable<T> all) {
+    return new Call<>(new Callable<List<T>>() {
+      @Override
+      public List<T> call() throws Exception {
+        return putAll(all);
+      }
+    });
+  }
+
+  @Override
+  public Call<T> deleteAsync(final long id) {
+    return new Call<>(new Callable<T>() {
+      @Override
+      public T call() throws Exception {
+        return delete(id);
+      }
+    });
+  }
+
+  @Override
+  public Call<Boolean> clearAsync() {
+    return new Call<>(new Callable<Boolean>() {
+      @Override
+      public Boolean call() throws Exception {
+        return clear();
+      }
+    });
+  }
+
+  @Override
+  public Call<Integer> countAsync() {
+    return new Call<>(new Callable<Integer>() {
+      @Override
+      public Integer call() throws Exception {
+        return count();
       }
     });
   }

@@ -45,7 +45,7 @@ class CollectionThreadingSpec extends RoboSpecification {
 
     then:
     println '\nResults:'
-    collection.allAsync().value().sort({ a, b -> a.id.compareTo(b.id) }).each {
+    collection.getAllAsync().value().sort({ a, b -> a.id.compareTo(b.id) }).each {
       print "$it \n"
     }
   }
@@ -79,7 +79,7 @@ class CollectionThreadingSpec extends RoboSpecification {
 
     then:
     println "\ndata = ${collection.getAsync(123).value()}"
-    collection.allAsync().value().size() == 1
+    collection.getAllAsync().value().size() == 1
 
   }
 

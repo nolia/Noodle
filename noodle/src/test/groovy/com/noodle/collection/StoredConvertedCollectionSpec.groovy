@@ -93,7 +93,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     collection.countAsync().value() == items.size()
 
     and:
-    collection.allAsync().value().containsAll(items)
+    collection.getAllAsync().value().containsAll(items)
   }
 
   def "should return null when item not found"() {
@@ -123,7 +123,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     items.each { collection.putAsync(it).value() }
 
     then:
-    def listOfData = collection.allAsync().value()
+    def listOfData = collection.getAllAsync().value()
     listOfData.containsAll(items)
     listOfData.size() == items.size()
   }
@@ -155,7 +155,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     collection.clearAsync().value()
 
     and:
-    collection.allAsync().value().isEmpty()
+    collection.getAllAsync().value().isEmpty()
   }
 
   def "should count all items in a collection"(List items, int count) {

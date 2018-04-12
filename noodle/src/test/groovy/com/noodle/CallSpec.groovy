@@ -82,7 +82,7 @@ class CallSpec extends RoboSpecification {
     def callback = Mock(Call.Callback)
 
     when:
-    result.executeOn(this.executor).withCallback(callback).get()
+    result.executeOn(this.executor).get(callback)
 
     then:
     1 * callback.onReady("hello, world!")
@@ -95,7 +95,7 @@ class CallSpec extends RoboSpecification {
     result = new Call<>({ throw UnsupportedOperationException("Ha!") } as Callable)
 
     when:
-    result.executeOn(this.executor).withCallback(callback).get()
+    result.executeOn(this.executor).get(callback)
 
     then:
     0 * callback.onReady(_)

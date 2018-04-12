@@ -16,6 +16,30 @@ import java.util.List;
  */
 public interface Collection<T> {
 
+  //region Sync methods
+
+  List<T> getAll();
+
+  List<T> filter(Predicate<T> predicate);
+
+  T get(long id);
+
+  T put(T t);
+
+  List<T> putAll(T... all);
+
+  List<T> putAll(Iterable<T> all);
+
+  T delete(long id);
+
+  boolean clear();
+
+  int count();
+
+  //endregion
+
+  //region Async methods
+
   /**
    * Get the item by it's id. Returns {@link Call},
    * holding this item or null, if not found.
@@ -80,7 +104,7 @@ public interface Collection<T> {
    * @return {@link Call}, that holds unmodifiable list
    * of all items in this collection.
    */
-  Call<List<T>> allAsync();
+  Call<List<T>> getAllAsync();
 
   /**
    * Returns unmodifiable list of all items in this collection,
@@ -91,6 +115,8 @@ public interface Collection<T> {
    * that satisfy given predicate.
    */
   Call<List<T>> filterAsync(Predicate<T> predicate);
+
+  //endregion
 
   /**
    * Test function, used to filter items.
