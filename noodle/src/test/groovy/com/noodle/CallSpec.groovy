@@ -60,7 +60,7 @@ class CallSpec extends RoboSpecification {
 
   def "should throw exception when executor is not specified"() {
     when:
-    result.get()
+    result.enqueue()
 
     then:
     thrown RuntimeException
@@ -71,7 +71,7 @@ class CallSpec extends RoboSpecification {
     Executor mockExecutor = Mock()
 
     when:
-    result.executeOn(mockExecutor).get()
+    result.executeOn(mockExecutor).enqueue()
 
     then:
     1 * mockExecutor.execute(_)
@@ -82,7 +82,7 @@ class CallSpec extends RoboSpecification {
     def callback = Mock(Call.Callback)
 
     when:
-    result.executeOn(this.executor).get(callback)
+    result.executeOn(this.executor).enqueue(callback)
 
     then:
     1 * callback.onReady("hello, world!")
@@ -95,7 +95,7 @@ class CallSpec extends RoboSpecification {
     result = new Call<>({ throw UnsupportedOperationException("Ha!") } as Callable)
 
     when:
-    result.executeOn(this.executor).get(callback)
+    result.executeOn(this.executor).enqueue(callback)
 
     then:
     0 * callback.onReady(_)

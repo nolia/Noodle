@@ -27,7 +27,7 @@ public class Call<K> {
    * Synchronously runs all operations backing this result object
    * and returns the item.<br/>
    * <b>Note: this operation may throw {@link RuntimeException}. To be safe,
-   * you can use callback and {@link #get(Callback)} method.</b>
+   * you can use callback and {@link #enqueue(Callback)} method.</b>
    *
    * @return item, that this result holds
    */
@@ -59,7 +59,7 @@ public class Call<K> {
    * @param callback callback to be called when result is ready
    * @return this Call instance
    */
-  public Call<K> get(final Callback<K> callback) {
+  public Call<K> enqueue(final Callback<K> callback) {
     if (executor == null) {
       throw new RuntimeException("Executor is not specified!");
     }
