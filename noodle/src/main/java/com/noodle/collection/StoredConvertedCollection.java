@@ -216,13 +216,12 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   private T putItemToCollection(T t) {
     long id = description.idOfItem(t);
-    T item = t;
     if (id == 0) {
       id = newSequenceId();
-      item = description.setItemId(t, id);
+      t = description.setItemId(t, id);
     }
     storage.put(toRecord(id, t));
-    return item;
+    return t;
   }
 
   private ArrayList<T> findItemsWith(final Predicate<T> predicate) {
