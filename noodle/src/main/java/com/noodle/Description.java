@@ -45,15 +45,16 @@ public class Description<T> {
   /**
    * Uses {@link SetIdOperator} to set id of the item.
    *
-   * @param t entity
+   * @param t  entity
    * @param id its id
    */
-  public void setItemId(final T t, final long id) {
-    setIdOperator.setId(t, id);
+  public T setItemId(final T t, final long id) {
+    return setIdOperator.setId(t, id);
   }
 
   /**
    * Type this is description of
+   *
    * @return this is description of
    */
   public Class<T> getType() {
@@ -104,7 +105,7 @@ public class Description<T> {
      * @param fieldName name of the id field
      * @return this builder instance
      */
-    public  DescriptionBuilder<T> withIdField(String fieldName) {
+    public DescriptionBuilder<T> withIdField(String fieldName) {
       final ReflectionIdField<T> reflectionIdField = new ReflectionIdField<>(clazz, fieldName);
       this.getIdOperator = reflectionIdField;
       this.setIdOperator = reflectionIdField;
@@ -145,14 +146,14 @@ public class Description<T> {
    * @param <T> item type
    */
   public interface SetIdOperator<T> {
-    void setId(T t, long id);
+    T setId(T t, long id);
   }
 
   static class ReflectionIdField<T> implements GetIdOperator<T>, SetIdOperator<T> {
 
     private Field field;
 
-    public ReflectionIdField(final Class<T> clazz, final String fieldName) {
+    ReflectionIdField(final Class<T> clazz, final String fieldName) {
       try {
         field = clazz.getDeclaredField(fieldName);
 
@@ -182,12 +183,13 @@ public class Description<T> {
     }
 
     @Override
-    public void setId(final T t, final long id) {
+    public T setId(final T t, final long id) {
       try {
         field.setLong(t, id);
       } catch (IllegalAccessException e) {
         throw new RuntimeException(e);
       }
+      return t;
     }
   }
 }

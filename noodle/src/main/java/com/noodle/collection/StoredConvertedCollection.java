@@ -75,12 +75,12 @@ public class StoredConvertedCollection<T> implements Collection<T> {
 
   @Override
   public T put(final T t) {
-    putItemToCollection(t);
-    return t;
+    return putItemToCollection(t);
   }
 
+  @SafeVarargs
   @Override
-  public List<T> putAll(final T... all) {
+  public final List<T> putAll(final T... all) {
     return putAll(Arrays.asList(all));
   }
 
@@ -214,13 +214,15 @@ public class StoredConvertedCollection<T> implements Collection<T> {
     });
   }
 
-  private void putItemToCollection(T t) {
+  private T putItemToCollection(T t) {
     long id = description.idOfItem(t);
+    T item = t;
     if (id == 0) {
       id = newSequenceId();
-      description.setItemId(t, id);
+      item = description.setItemId(t, id);
     }
     storage.put(toRecord(id, t));
+    return item;
   }
 
   private ArrayList<T> findItemsWith(final Predicate<T> predicate) {
