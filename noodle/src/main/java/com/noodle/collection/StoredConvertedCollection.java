@@ -44,7 +44,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
     for (byte[] key : getAllCollectionKeys()) {
       final String idStr = new String(key).split(":")[1];
       final Long id = Long.valueOf(idStr);
-      if (id != null && sequenceId.get() < id) {
+      if (sequenceId.get() < id) {
         sequenceId.set(id);
       }
     }
@@ -128,7 +128,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<List<T>> getAllAsync() {
     return new Call<>(new Callable<List<T>>() {
       @Override
-      public List<T> call() throws Exception {
+      public List<T> call() {
         return getAll();
       }
     });
@@ -138,7 +138,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<List<T>> filterAsync(final Predicate<T> predicate) {
     return new Call<>(new Callable<List<T>>() {
       @Override
-      public List<T> call() throws Exception {
+      public List<T> call() {
         return filter(predicate);
       }
     });
@@ -148,7 +148,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<T> getAsync(final long id) {
     return new Call<>(new Callable<T>() {
       @Override
-      public T call() throws Exception {
+      public T call() {
         return get(id);
       }
     });
@@ -158,7 +158,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<T> putAsync(final T t) {
     return new Call<>(new Callable<T>() {
       @Override
-      public T call() throws Exception {
+      public T call() {
         return put(t);
       }
     });
@@ -168,7 +168,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<List<T>> putAllAsync(final T[] all) {
     return new Call<>(new Callable<List<T>>() {
       @Override
-      public List<T> call() throws Exception {
+      public List<T> call() {
         return putAll(all);
       }
     });
@@ -178,7 +178,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<List<T>> putAllAsync(final Iterable<T> all) {
     return new Call<>(new Callable<List<T>>() {
       @Override
-      public List<T> call() throws Exception {
+      public List<T> call() {
         return putAll(all);
       }
     });
@@ -188,7 +188,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<T> deleteAsync(final long id) {
     return new Call<>(new Callable<T>() {
       @Override
-      public T call() throws Exception {
+      public T call() {
         return delete(id);
       }
     });
@@ -198,7 +198,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<Boolean> clearAsync() {
     return new Call<>(new Callable<Boolean>() {
       @Override
-      public Boolean call() throws Exception {
+      public Boolean call() {
         return clear();
       }
     });
@@ -208,7 +208,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   public Call<Integer> countAsync() {
     return new Call<>(new Callable<Integer>() {
       @Override
-      public Integer call() throws Exception {
+      public Integer call() {
         return count();
       }
     });
@@ -239,7 +239,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   }
 
   private List<byte[]> getAllCollectionKeys() {
-    return storage.prefixedWith(String.format(Locale.US, "%s", clazz.getCanonicalName()).getBytes());
+    return storage.prefixedWith(description.getCollectionName().getBytes());
   }
 
   private Record toRecord(final long id, final T t) {
@@ -252,7 +252,7 @@ public class StoredConvertedCollection<T> implements Collection<T> {
   private byte[] getKey(final long id) {
     final String keyString = String.format(Locale.US,
         "%s:%d",
-        clazz.getCanonicalName(),
+        description.getCollectionName(),
         id);
     return keyString.getBytes();
   }

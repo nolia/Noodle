@@ -19,6 +19,7 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
   void setup() {
     description = Description.of(Data)
         .withIdField("id")
+        .withCollectionName("data")
         .build()
 
     converter = new GsonConverter(new Gson())
@@ -208,10 +209,12 @@ class StoredConvertedCollectionSpec extends RoboSpecification {
     items.each { collection.putAsync(it).value() }
 
     when:
-    def newCollection = new StoredConvertedCollection<Data>(Data,
+    def newCollection = new StoredConvertedCollection<Data>(
+        Data,
         description,
         converter,
-        storage)
+        storage
+    )
 
     then:
     newCollection.sequenceId.get() == 5

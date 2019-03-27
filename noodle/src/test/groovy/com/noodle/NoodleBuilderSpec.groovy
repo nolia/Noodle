@@ -44,6 +44,17 @@ class NoodleBuilderSpec extends RoboSpecification {
     new File("other.noodle").delete()
   }
 
+  def "should register annotated type with builder and collection name"() {
+    when:
+    def newNoodle = Noodle.with(context)
+        .addType(AnnotatedData, "data")
+        .build()
+
+    then:
+    newNoodle.descriptionHashMap.containsKey("data")
+  }
+
+
   def "should register annotated type with builder"() {
     when:
     def newNoodle = Noodle.with(context)
@@ -51,7 +62,7 @@ class NoodleBuilderSpec extends RoboSpecification {
         .build()
 
     then:
-    newNoodle.descriptionHashMap.containsKey(AnnotatedData.class.getCanonicalName())
+    newNoodle.descriptionHashMap.containsKey(AnnotatedData.class.getSimpleName())
   }
 
   def "should not register class with more than one id"() {

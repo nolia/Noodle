@@ -25,16 +25,16 @@ class NoodleSpec extends RoboSpecification {
     def description = Description.of(Data).withIdField("id").build()
 
     when:
-    noodle.registerType(Data, description)
+    noodle.registerType(description)
 
     then:
-    noodle.descriptionHashMap.containsKey(Data.class.getCanonicalName())
-    noodle.descriptionHashMap.get(Data.class.getCanonicalName()) == description
+    noodle.descriptionHashMap.containsKey(Data.class.getSimpleName())
+    noodle.descriptionHashMap.get(Data.class.getSimpleName()) == description
   }
 
   def "should return typed collection"() {
     given:
-    noodle.registerType(Data, Description.of(Data).withIdField("id").build())
+    noodle.registerType(Description.of(Data).withIdField("id").build())
 
     when:
     def dataCollection = noodle.collectionOf(Data)
@@ -53,7 +53,7 @@ class NoodleSpec extends RoboSpecification {
 
   def "get collection for second time should return same collection"() {
     given:
-    noodle.registerType(Data, Description.of(Data).withIdField("id").build())
+    noodle.registerType(Description.of(Data).withIdField("id").build())
     def collection = noodle.collectionOf(Data)
 
     when:

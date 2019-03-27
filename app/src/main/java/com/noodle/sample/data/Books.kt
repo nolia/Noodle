@@ -23,7 +23,7 @@ class Book {
 class BookManager(context: Context) {
 
     private var noodle: Noodle = Noodle.Builder(context)
-            .addType(Book::class.java)
+            .addType(Book::class.java, "books")
             .build()
 
     private var listener: Listener? = null
@@ -34,7 +34,7 @@ class BookManager(context: Context) {
 
     init {
 
-        collection = noodle.collectionOf(Book::class.java)
+        collection = noodle.collectionOf(Book::class.java, "books")
     }
 
     fun addBook(book: Book) {

@@ -10,13 +10,16 @@ import java.lang.reflect.Modifier;
 public class Description<T> {
 
   final Class<T> clazz;
+  final String collectionName;
   final GetIdOperator<T> getIdOperator;
   final SetIdOperator<T> setIdOperator;
 
-  public Description(final Class<T> clazz,
-                     final GetIdOperator<T> getIdOperator,
-                     final SetIdOperator<T> setIdOperator) {
+  private Description(final Class<T> clazz,
+                      final String collectionName,
+                      final GetIdOperator<T> getIdOperator,
+                      final SetIdOperator<T> setIdOperator) {
     this.clazz = clazz;
+    this.collectionName = collectionName;
     this.getIdOperator = getIdOperator;
     this.setIdOperator = setIdOperator;
   }
@@ -62,6 +65,15 @@ public class Description<T> {
   }
 
   /**
+   * Returns the name of this collection.
+   *
+   * @return the name of this collection
+   */
+  public String getCollectionName() {
+    return collectionName;
+  }
+
+  /**
    * Helper class to build Descriptions.
    *
    * @param <T> entity type
@@ -69,11 +81,13 @@ public class Description<T> {
   public static class DescriptionBuilder<T> {
 
     private final Class<T> clazz;
+    private String collectionName;
     private GetIdOperator<T> getIdOperator;
     private SetIdOperator<T> setIdOperator;
 
-    public DescriptionBuilder(final Class<T> clazz) {
+    DescriptionBuilder(final Class<T> clazz) {
       this.clazz = clazz;
+      this.collectionName = clazz.getSimpleName();
     }
 
     /**
@@ -113,6 +127,18 @@ public class Description<T> {
     }
 
     /**
+     * Overrides the collection name. Useful when migrating data.
+     * By default collection name is set to {@link Class#getSimpleName()}.
+     *
+     * @param collectionName collection name to be used.
+     * @return this builder instance
+     */
+    public DescriptionBuilder<T> withCollectionName(final String collectionName) {
+      this.collectionName = collectionName;
+      return this;
+    }
+
+    /**
      * Creates new {@link Description} object, based on this item.
      * Note, that getId and setId operators must be presetn.
      *
@@ -127,7 +153,11 @@ public class Description<T> {
         throw new RuntimeException("Set id operator may not be null");
       }
 
-      return new Description<>(clazz, getIdOperator, setIdOperator);
+      if (collectionName == null || collectionName.isEmpty()) {
+        throw new RuntimeException("Collection name may not be empty or null. Found " + collectionName);
+      }
+
+      return new Description<>(clazz, collectionName, getIdOperator, setIdOperator);
     }
   }
 

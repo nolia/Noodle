@@ -43,6 +43,7 @@ public class Noodle {
 
   /**
    * Creates new builder instance
+   *
    * @param context application context
    * @return new Builder instance
    */
@@ -68,8 +69,9 @@ public class Noodle {
 
   /**
    * Creates new Noodle with specified parameters.
-   * @param context application context
-   * @param storage
+   *
+   * @param context   application context
+   * @param storage   a storage object to use
    * @param converter which converter to use
    */
   public Noodle(final Context context, final Storage storage, final Converter converter) {
@@ -82,56 +84,69 @@ public class Noodle {
    * Registers the type of objects which can be stored in this Noodle storage.
    * If there was previously registered type, rewrites its description with new one.
    *
-   * @param type type of objects to store
    * @param description description of the type
-   * @param <T> generic type, to be statically type-safe
+   * @param <T>         generic type, to be statically type-safe
    * @return this Noodle instance
    */
-  public <T> Noodle registerType(final Class<T> type, final Description<T> description) {
-    descriptionHashMap.put(type.getCanonicalName(), description);
+  public <T> Noodle registerType(final Description<T> description) {
+    descriptionHashMap.put(description.collectionName, description);
     return this;
   }
 
   /**
-   * Returns the collection of the given type.<br/>
-   * <b>Note: type description have to be already registered with
-   * {@link #registerType(Class, Description)}.</b>
+   * Returns the collection of the given type and name.<br/>
+   * * <b>Note: type description have to be already registered with
+   * * {@link #registerType(Description) }.
    *
-   * @param type type of objects to store
-   * @param <T> generic type, to be statically type-safe
+   * @param type           type of objects to store
+   * @param collectionName name of the collection
+   * @param <T>            generic type, to be statically type-safe
    * @return collection of the given type.
    */
   @SuppressWarnings("unchecked")
-  public <T> Collection<T> collectionOf(final Class<T> type) {
-    final String kind = type.getCanonicalName();
-    if (!descriptionHashMap.containsKey(kind)) {
-      throw new IllegalArgumentException("Class is not registered: " + type.getCanonicalName());
+  public <T> Collection<T> collectionOf(final Class<T> type, final String collectionName) {
+    if (!descriptionHashMap.containsKey(collectionName)) {
+      throw new IllegalArgumentException("Collection " + collectionName + " not found ");
     }
-    Description<T> description = ((Description<T>) descriptionHashMap.get(kind));
+    Description<T> description = ((Description<T>) descriptionHashMap.get(collectionName));
 
-    if (collectionHashMap.containsKey(kind)) {
-      final Collection collection = collectionHashMap.get(kind);
+    if (collectionHashMap.containsKey(collectionName)) {
+      final Collection collection = collectionHashMap.get(collectionName);
       return ((Collection<T>) collection);
     }
 
     Collection<T> result = new StoredConvertedCollection<>(type, description, converter, storage);
-    collectionHashMap.put(kind, result);
+    collectionHashMap.put(collectionName, result);
 
     return result;
   }
 
   /**
+   * Returns the collection of the given type.<br/>
+   * <b>Note: type description have to be already registered with
+   * {@link #registerType(Description) }.
+   *
+   * @param type type of objects to store
+   * @param <T>  generic type, to be statically type-safe
+   * @return collection of the given type.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> Collection<T> collectionOf(final Class<T> type) {
+    return collectionOf(type, type.getSimpleName());
+  }
+
+  /**
    * Get object from the storage.
    *
-   * @param key key, that object was previously stored with
+   * @param key  key, that object was previously stored with
    * @param type class of object to parse
-   * @param <T> type of the object
+   * @param <T>  type of the object
    * @return Call, wrapping wanted object, or null if not found
    */
   public <T> Call<T> get(final String key, final Class<T> type) {
     return new Call<>(new Callable<T>() {
       @Override
-      public T call() throws Exception {
+      public T call() {
         final byte[] keyBytes = keyValueKey(key);
         final Record record = storage.get(keyBytes);
         return record != null
@@ -144,15 +159,15 @@ public class Noodle {
   /**
    * Put object to the storage.
    *
-   * @param key key that object will be stored with
+   * @param key   key that object will be stored with
    * @param value object
-   * @param <T> object type
+   * @param <T>   object type
    * @return Call, wrapping the same object
    */
   public <T> Call<T> put(final String key, final T value) {
     return new Call<>(new Callable<T>() {
       @Override
-      public T call() throws Exception {
+      public T call() {
         final byte[] keyBytes = keyValueKey(key);
         final byte[] data = converter.toBytes(value);
         storage.put(new Record(keyBytes, data));
@@ -163,6 +178,7 @@ public class Noodle {
 
   /**
    * Deletes object from storage
+   *
    * @param key key to delete object by
    * @return Call, wrapping boolean, indicating whether object was deleted
    * by this operation
@@ -170,7 +186,7 @@ public class Noodle {
   public Call<Boolean> delete(final String key) {
     return new Call<>(new Callable<Boolean>() {
       @Override
-      public Boolean call() throws Exception {
+      public Boolean call() {
         return storage.remove(keyValueKey(key)) != null;
       }
     });
@@ -191,7 +207,7 @@ public class Noodle {
     private Converter converter;
     private Encryption encryption;
 
-    final HashMap<Class, Description> descriptionHashMap = new HashMap<>();
+    final HashMap<String, Description> descriptionHashMap = new HashMap<>();
 
     public Builder(final Context context) {
       this.context = context;
@@ -200,6 +216,7 @@ public class Noodle {
 
     /**
      * Sets the path to a noodle file
+     *
      * @param filePath path to file
      * @return this builder instance
      */
@@ -210,6 +227,7 @@ public class Noodle {
 
     /**
      * Sets the converter of Noodle to be built
+     *
      * @param converter {@link Converter} to be used in this Noodle
      * @return this builder instance
      */
@@ -220,17 +238,19 @@ public class Noodle {
 
     /**
      * Add given description and it's type to a set of registered types
+     *
      * @param description description of type you want to store
-     * @param <T> type
+     * @param <T>         type
      * @return this builder instance
      */
     public <T> Builder addType(final Description<T> description) {
-      descriptionHashMap.put(description.getType(), description);
+      descriptionHashMap.put(description.collectionName, description);
       return this;
     }
 
     /**
      * Set the {@link Encryption} to be used in a result Noodle.
+     *
      * @param encryption encryption to use
      * @return this builder instance
      */
@@ -240,13 +260,16 @@ public class Noodle {
     }
 
     /**
-     * Register given type to be used in storage. <b>NOTE: Entity class must have an annotated id field,
+     * Register given type to be used in storage with the specified collection name.
+     * <b>NOTE: Entity class must have an annotated id field,
      * with {@link Id} annotation present.</b>
-     * @param type type you want to store
-     * @param <T> type
+     *
+     * @param type           type you want to store
+     * @param collectionName name of the collection to use, must not be null or empty
+     * @param <T>            type
      * @return this build instance
      */
-    public <T> Builder addType(final Class<T> type) {
+    public <T> Builder addType(final Class<T> type, final String collectionName) {
       Field idField = null;
       for (Field field : type.getDeclaredFields()) {
         for (Annotation annotation : field.getAnnotations()) {
@@ -262,11 +285,29 @@ public class Noodle {
         throw new RuntimeException("Entity must have an Id field");
       }
 
-      return addType(Description.of(type).withIdField(idField.getName()).build());
+      return addType(
+          Description.of(type)
+              .withCollectionName(collectionName)
+              .withIdField(idField.getName())
+              .build()
+      );
+    }
+
+    /**
+     * Same as {@link #addType(Class, String)} but uses class {@link Class#getSimpleName() simple name}
+     * as the name of the collection.
+     *
+     * @param type type you want to store
+     * @param <T>  type
+     * @return this build instance
+     */
+    public <T> Builder addType(final Class<T> type) {
+      return addType(type, type.getSimpleName());
     }
 
     /**
      * Builds the Noodle according to params.
+     *
      * @return Noodle instance
      */
     public Noodle build() {
@@ -279,8 +320,8 @@ public class Noodle {
           storage,
           converter != null ? converter : new GsonConverter(new Gson())
       );
-      for (Class clazz : descriptionHashMap.keySet()) {
-        noodle.registerType(clazz, descriptionHashMap.get(clazz));
+      for (Description description : descriptionHashMap.values()) {
+        noodle.registerType(description);
       }
 
       return noodle;
