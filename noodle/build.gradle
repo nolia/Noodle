@@ -18,12 +18,12 @@ group='com.github.nolia'
 version='0.2'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  compileSdkVersion 28
+  buildToolsVersion "28.0.3"
 
   defaultConfig {
     minSdkVersion 9
-    targetSdkVersion 25
+    targetSdkVersion 28
     versionCode 1
     versionName "1.0"
   }
@@ -36,15 +36,15 @@ android {
 }
 
 dependencies {
-  compile 'com.google.code.gson:gson:2.6.2'
+  implementation 'com.google.code.gson:gson:2.8.5'
 
   // Optional
-  provided "io.reactivex.rxjava2:rxjava:2.0.5"
+  compileOnly "io.reactivex.rxjava2:rxjava:2.2.4"
 
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.robolectric:robolectric:3.0'
-  testCompile 'org.robospock:robospock:1.0.0'
-  testCompile 'cglib:cglib-nodep:3.2.0'
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'org.robolectric:robolectric:3.0'
+  testImplementation 'org.robospock:robospock:1.0.0'
+  testImplementation 'cglib:cglib-nodep:3.2.0'
 }
 
 tasks.withType(Test) {

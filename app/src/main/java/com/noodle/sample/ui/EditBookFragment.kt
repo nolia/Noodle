@@ -2,13 +2,13 @@ package com.noodle.sample.ui
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v7.app.AppCompatDialogFragment
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatDialogFragment
 
 import com.noodle.sample.NoodleApp
 import com.noodle.sample.R
@@ -29,13 +29,9 @@ class EditBookFragment : AppCompatDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        bookManager = (activity.application as NoodleApp).bookManager
+        bookManager = (requireActivity().application as NoodleApp).bookManager
 
-        val id = if (arguments != null) {
-            arguments.getLong(ARG_BOOK_ID, 0)
-        } else {
-            0
-        }
+        val id = arguments?.getLong(ARG_BOOK_ID) ?: 0
 
         if (id > 0) {
             book = bookManager.getBook(id)
@@ -47,14 +43,11 @@ class EditBookFragment : AppCompatDialogFragment() {
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.fragment_edit_book, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_edit_book, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        if (view == null) {
-            throw IllegalArgumentException("View may not be null!")
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         inputTitle = view.findViewById(R.id.inputTitle) as EditText
         inputAuthor = view.findViewById(R.id.inputAuthor) as EditText
 
@@ -62,7 +55,7 @@ class EditBookFragment : AppCompatDialogFragment() {
         deleteButton.setOnClickListener { onDeleteClicked() }
         deleteButton.visibility = if (book.id > 0) View.VISIBLE else View.GONE
 
-        view.findViewById(R.id.buttonSave).setOnClickListener { onSaveClicked() }
+        view.findViewById<View>(R.id.buttonSave).setOnClickListener { onSaveClicked() }
 
         inputTitle.setText(book.title)
         inputAuthor.setText(book.authorName)
@@ -96,7 +89,7 @@ class EditBookFragment : AppCompatDialogFragment() {
 
     companion object {
 
-        val ARG_BOOK_ID = "book_id"
+        const val ARG_BOOK_ID = "book_id"
     }
 
 }

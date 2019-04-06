@@ -1,14 +1,14 @@
 package com.noodle.sample.ui
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.SearchView
 import android.text.TextUtils
 import android.view.*
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.noodle.sample.NoodleApp
 import com.noodle.sample.R
 import com.noodle.sample.data.Book
@@ -28,7 +28,7 @@ class BookListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bookManager = (activity.application as NoodleApp).bookManager
+        bookManager = (requireActivity().application as NoodleApp).bookManager
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -47,21 +47,21 @@ class BookListFragment : Fragment() {
         })
     }
 
-    override fun onCreateView(inflater: LayoutInflater?,
+    override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
-            inflater?.inflate(R.layout.fragment_book_list, container, false)
+            inflater.inflate(R.layout.fragment_book_list, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        recyclerView = view!!.findViewById(R.id.recyclerView) as RecyclerView
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        recyclerView = view.findViewById(R.id.recyclerView) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        adapter = BookListAdapter(bookManager!!.books)
+        adapter = BookListAdapter(bookManager.books)
         recyclerView.adapter = adapter
 
-        bookManager!!.setListener(object : BookManager.Listener {
+        bookManager.setListener(object : BookManager.Listener {
             override fun onBooksChanged() {
-                adapter.setItems(bookManager!!.books)
+                adapter.setItems(bookManager.books)
             }
         })
     }
@@ -83,7 +83,7 @@ class BookListFragment : Fragment() {
     }
 
     private fun onClear() {
-        AlertDialog.Builder(activity)
+        AlertDialog.Builder(requireContext())
                 .setTitle(R.string.remove_all_title)
                 .setMessage(R.string.remove_all_message)
                 .setPositiveButton(R.string.yes) { _, _ -> bookManager.clear() }
@@ -91,14 +91,12 @@ class BookListFragment : Fragment() {
                 .show()
     }
 
-    internal inner class BookListAdapter(bookList: List<Book>) : RecyclerView.Adapter<BookViewHolder>() {
+    internal inner class BookListAdapter(
+            private var bookList: List<Book>
+    ) : RecyclerView.Adapter<BookViewHolder>() {
 
-        var bookList: List<Book> = ArrayList()
-        var layoutInflater = activity.layoutInflater
+        private val layoutInflater: LayoutInflater = LayoutInflater.from(requireContext())
 
-        init {
-            this.bookList = bookList
-        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
             val view = layoutInflater.inflate(R.layout.item_book, parent, false)

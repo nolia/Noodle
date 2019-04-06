@@ -30,7 +30,7 @@ class BookManager(context: Context) {
     private val collection: Collection<Book>
 
     val books: List<Book>
-        get() = collection.getAllAsync().value()
+        get() = collection.allAsync.value()
 
     init {
 

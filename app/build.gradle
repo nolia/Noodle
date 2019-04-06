@@ -1,18 +1,19 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  compileSdkVersion 28
+  buildToolsVersion "28.0.3"
 
   defaultConfig {
     applicationId "com.noodle.sample"
     minSdkVersion 14
-    targetSdkVersion 25
+    targetSdkVersion 28
     versionCode 1
     versionName "1.0"
 
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   buildTypes {
     release {
@@ -23,19 +24,15 @@ android {
 }
 
 ext {
-  supportLibVersion = '25.2.0'
+  androidXversion = '1.0.0'
 }
 
 dependencies {
-  compile project(':noodle')
-
-  compile "com.android.support:appcompat-v7:$supportLibVersion"
-  compile "com.android.support:design:$supportLibVersion"
-  compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-
-  androidTestCompile("com.android.support:support-annotations:$supportLibVersion") {
-    force = true
-  }
-  androidTestCompile('com.android.support.test:runner:0.5')
-  androidTestCompile 'com.android.support.test:rules:0.5'
+  implementation project(':noodle')
+  implementation "androidx.appcompat:appcompat:$androidXversion"
+  implementation "com.google.android.material:material:$androidXversion"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+  mavenCentral()
 }

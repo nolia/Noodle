@@ -1,9 +1,8 @@
 package com.noodle.sample.ui
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
-
+import androidx.appcompat.app.AppCompatActivity
 import com.noodle.sample.R
 
 class MainActivity : AppCompatActivity() {
@@ -13,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setTitle(R.string.main_title)
 
-        findViewById(R.id.addBook).setOnClickListener {
+        findViewById<View>(R.id.addBook).setOnClickListener {
             val editBookFragment = EditBookFragment()
             editBookFragment.show(supportFragmentManager, "add_book")
         }
