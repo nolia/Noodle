@@ -1,1 +1,1 @@
-include ':app', ':noodle'
+include ':app', ':noodle', ':noodle-core'
