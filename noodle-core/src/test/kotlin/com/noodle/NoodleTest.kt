@@ -18,32 +18,59 @@ class NoodleTest {
 
     private lateinit var noodle: Noodle
 
+    // Test data.
+    private val key = "key"
+    private val value = "value"
+    private val record = Record(key.toByteArray(), value.toByteArray())
+
     @Before
     fun setUp() {
-        storage = mockk(relaxUnitFun = true)
-        converter = mockk(relaxUnitFun = true)
+        storage = mockk(relaxUnitFun = true) {
+            every { get(key.toByteArray()) } returns record
+        }
+        converter = mockk(relaxUnitFun = true) {
+            every { toBytes(any<String>()) } answers { firstArg<String>().toByteArray() }
+            every { fromBytes(any(), any<Class<String>>()) } answers { String(firstArg<ByteArray>()) }
+        }
 
         noodle = buildNoodle {
             storage = this@NoodleTest.storage
             converter = this@NoodleTest.converter
         }
+
+    }
+
+    @Test
+    fun shouldPut() {
+        // When
+        noodle.put(key, value)
+
+        // Then
+        verify { converter.toBytes(key) }
+        verify { converter.toBytes(value) }
+        verify { storage.put(record) }
     }
 
     @Test
     fun shouldGet() {
-        // Given
-        val data = "data".toByteArray()
-        val key = "key".toByteArray()
-        val record = Record(key, data)
-
-        every { converter.toBytes("key") } returns key
-        every { converter.toBytes("value") } returns data
-
         // When
-        noodle.put("key", "value")
+        val got: String? = noodle.get(key)
 
         // Then
-        verify { converter.toBytes("value") }
-        verify { storage.put(record) }
+        assert(got == value)
+        verify { storage.get(key.toByteArray()) }
+        verify { converter.toBytes(key) }
+        verify { converter.fromBytes(value.toByteArray(), String::class.java) }
+    }
+
+    @Test
+    fun shouldDelete() {
+        // Given
+        every { storage.remove(key.toByteArray()) } returns record
+
+       // Expect
+        assert(noodle.delete(key))
+        verify { converter.toBytes(key) }
+        verify { storage.remove(key.toByteArray()) }
     }
 }

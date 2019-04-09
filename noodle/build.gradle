@@ -1,12 +1,12 @@
 buildscript {
-  repositories {
-    jcenter()
-    mavenCentral()
-  }
-  dependencies {
-    classpath 'org.codehaus.groovy:gradle-groovy-android-plugin:0.3.8'
-    classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
-  }
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.codehaus.groovy:gradle-groovy-android-plugin:0.3.8'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+    }
 }
 
 apply plugin: 'com.android.library'
@@ -14,66 +14,67 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'groovyx.grooid.groovy-android'
 
 // Publishing config for JitPack.
-group='com.github.nolia'
-version='0.2'
+group = 'com.github.nolia'
+version = '0.2'
 
 android {
-  compileSdkVersion 28
-  buildToolsVersion "28.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
-  defaultConfig {
-    minSdkVersion 9
-    targetSdkVersion 28
-    versionCode 1
-    versionName "1.0"
-  }
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
     }
-  }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
 }
 
 dependencies {
-  implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
-  // Optional
-  compileOnly "io.reactivex.rxjava2:rxjava:2.2.4"
+    // Optional
+    compileOnly "io.reactivex.rxjava2:rxjava:2.2.4"
 
-  testImplementation 'junit:junit:4.12'
-  testImplementation 'org.robolectric:robolectric:3.0'
-  testImplementation 'org.robospock:robospock:1.0.0'
-  testImplementation 'cglib:cglib-nodep:3.2.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:3.0'
+    testImplementation 'org.robospock:robospock:1.0.0'
+    testImplementation 'cglib:cglib-nodep:3.2.0'
+    testImplementation 'io.reactivex.rxjava2:rxjava:2.2.4'
 }
 
 tasks.withType(Test) {
-  testLogging {
-    showStandardStreams true
-    events "skipped", "failed"
-    exceptionFormat "full"
-  }
+    testLogging {
+        showStandardStreams true
+        events "skipped", "failed"
+        exceptionFormat "full"
+    }
 }
 
 task sourcesJar(type: Jar) {
-  from android.sourceSets.main.java.srcDirs
-  classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
 }
 
 task javadoc(type: Javadoc) {
-  failOnError  false
-  source = android.sourceSets.main.java.sourceFiles
-  classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-  classpath += configurations.compile
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
 }
 
 // build a jar with javadoc
 task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier = 'javadoc'
-  from javadoc.destinationDir
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 artifacts {
-  archives sourcesJar
-  archives javadocJar
+    archives sourcesJar
+    archives javadocJar
 }

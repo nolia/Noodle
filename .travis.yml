@@ -7,8 +7,8 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-25.0.2
-    - android-25
+    - build-tools-28.0.3
+    - android-28
     - extra-android-support
     - extra-android-m2repository
     - extra-google-m2repository
@@ -16,6 +16,10 @@ android:
   licenses:
     - android-sdk-license-.+
     - '.+'
+
+# Accept the licence
+before_install:
+  - yes | sdkmanager "platforms;android-28"
 
 # cache between builds
 before_cache:
@@ -27,5 +31,5 @@ cache:
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
 
-script: ./gradlew :noodle:test
+script: ./gradlew :noodle-core:test
 

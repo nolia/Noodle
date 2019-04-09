@@ -1,6 +1,5 @@
 package com.noodle
 
-import com.google.gson.Gson
 import com.noodle.storage.RafStorage
 import com.noodle.storage.Record
 import com.noodle.storage.Storage
@@ -11,14 +10,12 @@ class Noodle internal constructor(
         private val converter: Converter
 ) {
 
-    public constructor(filePath: String) : this(
-            storage = RafStorage(File(filePath)),
-            converter = GsonConverter(Gson())
-    )
-
-    fun <T> get(key: String): T {
-        TODO("Not implemented")
+    fun <T> get(key: String, clazz: Class<T>): T? {
+        val record = storage.get(converter.toBytes(key)) ?: return null
+        return converter.fromBytes(record.data, clazz)
     }
+
+    inline fun <reified T> get(key: String): T? = get(key, T::class.java)
 
     fun <T> put(key: String, value: T) {
         val record = Record(
@@ -28,9 +25,7 @@ class Noodle internal constructor(
         storage.put(record)
     }
 
-    fun delete(key: String): Boolean {
-        TODO("Not implemented")
-    }
+    fun delete(key: String): Boolean = storage.remove(converter.toBytes(key)) != null
 
     class Builder {
         lateinit var storage: Storage
@@ -46,8 +41,7 @@ class Noodle internal constructor(
     }
 }
 
-fun buildNoodle(options: Noodle.Builder.() -> Unit): Noodle =
-        Noodle.Builder()
-                .apply(options)
-                .build()
+fun buildNoodle(options: Noodle.Builder.() -> Unit): Noodle = Noodle.Builder()
+        .apply(options)
+        .build()
 
