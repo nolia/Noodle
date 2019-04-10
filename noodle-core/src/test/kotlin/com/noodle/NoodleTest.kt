@@ -21,12 +21,14 @@ class NoodleTest {
     // Test data.
     private val key = "key"
     private val value = "value"
-    private val record = Record(key.toByteArray(), value.toByteArray())
+    private val noodleKey = "$NOODLE_KEY_PREFIX:$key"
+    private val keyBytes = noodleKey.toByteArray()
+    private val record = Record(keyBytes, value.toByteArray())
 
     @Before
     fun setUp() {
         storage = mockk(relaxUnitFun = true) {
-            every { get(key.toByteArray()) } returns record
+            every { get(keyBytes) } returns record
         }
         converter = mockk(relaxUnitFun = true) {
             every { toBytes(any<String>()) } answers { firstArg<String>().toByteArray() }
@@ -46,7 +48,7 @@ class NoodleTest {
         noodle.put(key, value)
 
         // Then
-        verify { converter.toBytes(key) }
+        verify { converter.toBytes(noodleKey) }
         verify { converter.toBytes(value) }
         verify { storage.put(record) }
     }
@@ -54,23 +56,34 @@ class NoodleTest {
     @Test
     fun shouldGet() {
         // When
-        val got: String? = noodle.get(key)
+        val got: String? = noodle[key]
 
         // Then
         assert(got == value)
-        verify { storage.get(key.toByteArray()) }
-        verify { converter.toBytes(key) }
+        verify { storage.get(keyBytes) }
+        verify { converter.toBytes(noodleKey) }
         verify { converter.fromBytes(value.toByteArray(), String::class.java) }
     }
 
     @Test
     fun shouldDelete() {
         // Given
-        every { storage.remove(key.toByteArray()) } returns record
+        every { storage.remove(keyBytes) } returns record
 
        // Expect
         assert(noodle.delete(key))
-        verify { converter.toBytes(key) }
-        verify { storage.remove(key.toByteArray()) }
+        verify { converter.toBytes(noodleKey) }
+        verify { storage.remove(keyBytes) }
+    }
+
+    @Test
+    fun useIndexedSetOperator() {
+        // When
+        noodle[key] = value
+
+        // Expect
+        verify { converter.toBytes(noodleKey) }
+        verify { converter.toBytes(value) }
+        verify { storage.put(record) }
     }
 }
