@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
+// Move this const to properties eventually.
 private const val MAX_COPY_BUFFER_SIZE = 16 * 1024 * 1024 // 16 Mb.
 private const val MIN_COPY_BUFFER_SIZE = 1024 // 1 Kb.
 
@@ -30,42 +31,35 @@ class RafStorage(file: File) : Storage {
         }
     }
 
+    //region Storage Interface
 
-    //region Storage
-
-    override fun get(key: ByteArray): Record? {
-        fileLock.read {
-            val pos = positionOf(key)
-            return if (pos != NO_POSITION) getRecordAt(pos) else null
-        }
+    override fun get(key: ByteArray): Record? = fileLock.read {
+        val pos = positionOf(key)
+        return if (pos != NO_POSITION) getRecordAt(pos) else null
     }
 
 
-    override fun put(record: Record) {
-        fileLock.write {
-            val key = record.key
+    override fun put(record: Record) = fileLock.write {
+        val key = record.key
 
-            val previousPos = positionOf(key)
-            if (previousPos != NO_POSITION) {
-                // TODO Try to rewrite at the same place.
-                removeImpl(key)
-            }
-
-            val pos = file.length()
-            file.seek(pos)
-            file.writeInt(record.key.size)
-            file.writeInt(record.data.size)
-            file.write(record.key)
-            file.write(record.data)
-
-            index[ByteWrapper(key)] = pos
+        val previousPos = positionOf(key)
+        if (previousPos != NO_POSITION) {
+            // TODO Try to rewrite at the same place.
+            removeImpl(key)
         }
+
+        val pos = file.length()
+        file.seek(pos)
+        file.writeInt(record.key.size)
+        file.writeInt(record.data.size)
+        file.write(record.key)
+        file.write(record.data)
+
+        index[ByteWrapper(key)] = pos
     }
 
-    override fun remove(key: ByteArray): Record? {
-        fileLock.write {
-            return removeImpl(key)
-        }
+    override fun remove(key: ByteArray): Record? = fileLock.write {
+        return removeImpl(key)
     }
 
     override fun getKeys(): List<ByteArray> = index
@@ -129,7 +123,6 @@ class RafStorage(file: File) : Storage {
         return record
     }
 
-
     private fun positionOf(key: ByteArray): Long = index[ByteWrapper(key)] ?: -1
 
     private fun getRecordAt(pos: Long): Record {
@@ -144,29 +137,27 @@ class RafStorage(file: File) : Storage {
         return Record(key, data)
     }
 
-    private fun remapIndexes() {
-        fileLock.write {
-            file.seek(0)
+    private fun remapIndexes() = fileLock.write {
+        file.seek(0)
 
-            while (file.filePointer < file.length()) {
-                val pos = file.filePointer
+        while (file.filePointer < file.length()) {
+            val pos = file.filePointer
 
-                // Read key size.
-                val keySize = file.readInt()
-                if (keySize == 0) break
-                // Read data size.
-                val dataSize = file.readInt()
+            // Read key size.
+            val keySize = file.readInt()
+            if (keySize == 0) break
+            // Read data size.
+            val dataSize = file.readInt()
 
-                // Read key itself and put it into index.
-                val key = ByteArray(keySize)
-                if (file.read(key) != keySize) {
-                    throw RuntimeException("Data is corrupted at $pos")
-                }
-                index[ByteWrapper(key)] = pos
-
-                // Move to the next.
-                file.seek(file.filePointer + dataSize)
+            // Read key itself and put it into index.
+            val key = ByteArray(keySize)
+            if (file.read(key) != keySize) {
+                throw RuntimeException("Data is corrupted at $pos")
             }
+            index[ByteWrapper(key)] = pos
+
+            // Move to the next.
+            file.seek(file.filePointer + dataSize)
         }
     }
 
@@ -185,7 +176,6 @@ class RafStorage(file: File) : Storage {
 
         return ByteArray(size.toInt())
     }
-
 
     //endregion
 }

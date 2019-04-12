@@ -1,9 +1,8 @@
 package com.noodle
 
-import com.noodle.storage.RafStorage
-import com.noodle.storage.Record
-import com.noodle.storage.Storage
+import com.noodle.storage.*
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 internal const val NOODLE_KEY_PREFIX = "\$noodle\$"
 
@@ -12,13 +11,14 @@ class Noodle internal constructor(
         private val converter: Converter
 ) {
 
+    private val dataCollections = ConcurrentHashMap<String, DataCollection>()
+
     //region Public Interface
 
     fun <T> get(key: String, clazz: Class<T>): T? {
         val record = storage.get(recordKey(key)) ?: return null
         return converter.fromBytes(record.data, clazz)
     }
-
 
     inline operator fun <reified T> get(key: String): T? =
             get(key, T::class.java)
@@ -46,10 +46,25 @@ class Noodle internal constructor(
 
     //endregion
 
-    private fun recordKey(key: String): ByteArray {
-        val noodleKey = "$NOODLE_KEY_PREFIX:$key"
-        return converter.toBytes(noodleKey)
+    //region Collections
+
+    fun <T> getCollection(name: String, description: Description<T>): Collection<T> {
+        val dataCollection = dataCollections[name] ?: DataCollection(storage, name).also { dataCollections[name] = it }
+        return ConvertedCollection(dataCollection, converter, description)
     }
+
+    inline fun <reified T> collectionOf(
+            name: String,
+            noinline getId: (T) -> Long,
+            noinline setId: (Long, T) -> T
+    ): Collection<T> = getCollection(
+            name,
+            Description(T::class.java, getId, setId)
+    )
+
+    //endregion
+
+    private fun recordKey(key: String): ByteArray = "$NOODLE_KEY_PREFIX:$key".toByteArray()
 
     class Builder {
         lateinit var storage: Storage
@@ -59,9 +74,7 @@ class Noodle internal constructor(
             storage = RafStorage(File(filePath))
         }
 
-        fun build(): Noodle {
-            return Noodle(storage, converter)
-        }
+        fun build(): Noodle = Noodle(storage, converter)
     }
 }
 

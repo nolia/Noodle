@@ -48,7 +48,6 @@ class NoodleTest {
         noodle.put(key, value)
 
         // Then
-        verify { converter.toBytes(noodleKey) }
         verify { converter.toBytes(value) }
         verify { storage.put(record) }
     }
@@ -61,7 +60,6 @@ class NoodleTest {
         // Then
         assert(got == value)
         verify { storage.get(keyBytes) }
-        verify { converter.toBytes(noodleKey) }
         verify { converter.fromBytes(value.toByteArray(), String::class.java) }
     }
 
@@ -70,9 +68,8 @@ class NoodleTest {
         // Given
         every { storage.remove(keyBytes) } returns record
 
-       // Expect
+        // Expect
         assert(noodle.delete(key))
-        verify { converter.toBytes(noodleKey) }
         verify { storage.remove(keyBytes) }
     }
 
@@ -82,7 +79,6 @@ class NoodleTest {
         noodle[key] = value
 
         // Expect
-        verify { converter.toBytes(noodleKey) }
         verify { converter.toBytes(value) }
         verify { storage.put(record) }
     }

@@ -4,7 +4,7 @@ package com.noodle.storage
 
 inline class ByteWrapper(val bytes: ByteArray) : Comparable<ByteWrapper> {
 
-    val size: Int get() = bytes.size
+    private val size: Int get() = bytes.size
 
     override fun compareTo(other: ByteWrapper): Int {
         val minLength = if (size < other.size) size else other.size
