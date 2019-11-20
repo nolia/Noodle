@@ -38,7 +38,7 @@ public class RandomAccessFileStorage implements Storage {
       }
 
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw toRuntimeException(e);
     }
   }
 
@@ -65,7 +65,7 @@ public class RandomAccessFileStorage implements Storage {
 
         index.put(new BytesWrapper(key), pos);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw toRuntimeException(e);
       }
     }
   }
@@ -123,7 +123,7 @@ public class RandomAccessFileStorage implements Storage {
 
         return decryptRecord(encryptedRecord);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw toRuntimeException(e);
       }
     }
   }
@@ -161,7 +161,7 @@ public class RandomAccessFileStorage implements Storage {
           encryption.encrypt(original.data)
       );
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw toRuntimeException(e);
     }
   }
 
@@ -187,7 +187,7 @@ public class RandomAccessFileStorage implements Storage {
           encryption.decrypt(encrypted.data)
       );
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw toRuntimeException(e);
     }
   }
 
@@ -207,7 +207,7 @@ public class RandomAccessFileStorage implements Storage {
       return new Record(keyBytes, dataBytes);
 
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw toRuntimeException(e);
     }
   }
 
@@ -242,5 +242,12 @@ public class RandomAccessFileStorage implements Storage {
         file.seek(file.getFilePointer() + dataSize);
       }
     }
+  }
+
+  /**
+   * Converts checked exception to runtime exception so that no mandatory try-catch is required.
+   */
+  private RuntimeException toRuntimeException(Exception e) {
+    return new RuntimeException(e);
   }
 }
