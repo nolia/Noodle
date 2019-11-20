@@ -50,7 +50,7 @@ class EncryptedStorageSpec extends RoboSpecification {
     storage.put(new Record(keyBytes, dataBytes))
 
     then:
-    1 * mockEncryption.encrypt(keyBytes) >> keyBytes
+    0 * mockEncryption.encrypt(keyBytes) >> keyBytes
     1 * mockEncryption.encrypt(dataBytes) >> dataBytes
 
   }
@@ -73,7 +73,7 @@ class EncryptedStorageSpec extends RoboSpecification {
     storage.get(keyBytes)
 
     then:
-    1 * mockEncryption.decrypt(keyBytes) >> keyBytes
+    0 * mockEncryption.decrypt(keyBytes) >> keyBytes
     1 * mockEncryption.decrypt(dataBytes) >> dataBytes
 
   }

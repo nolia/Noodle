@@ -157,7 +157,7 @@ public class RandomAccessFileStorage implements Storage {
   private Record encryptRecord(final Record original) {
     try {
       return new Record(
-          encryption.encrypt(original.key),
+          original.key,
           encryption.encrypt(original.data)
       );
     } catch (Exception e) {
@@ -183,7 +183,7 @@ public class RandomAccessFileStorage implements Storage {
   private Record decryptRecord(final Record encrypted) {
     try {
       return new Record(
-          encryption.decrypt(encrypted.key),
+          encrypted.key,
           encryption.decrypt(encrypted.data)
       );
     } catch (Exception e) {
@@ -237,8 +237,7 @@ public class RandomAccessFileStorage implements Storage {
           throw new RuntimeException("Data is corrupted at " + file.getFilePointer());
         }
 
-        final byte[] decryptedKey = encryption.decrypt(key);
-        index.put(new BytesWrapper(decryptedKey), pos);
+        index.put(new BytesWrapper(key), pos);
 
         file.seek(file.getFilePointer() + dataSize);
       }
