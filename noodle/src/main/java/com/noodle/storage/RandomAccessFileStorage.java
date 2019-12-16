@@ -38,7 +38,7 @@ public class RandomAccessFileStorage implements Storage {
       }
 
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw toRuntimeException(e);
     }
   }
 
@@ -65,7 +65,7 @@ public class RandomAccessFileStorage implements Storage {
 
         index.put(new BytesWrapper(key), pos);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw toRuntimeException(e);
       }
     }
   }
@@ -123,7 +123,7 @@ public class RandomAccessFileStorage implements Storage {
 
         return decryptRecord(encryptedRecord);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw toRuntimeException(e);
       }
     }
   }
@@ -157,11 +157,11 @@ public class RandomAccessFileStorage implements Storage {
   private Record encryptRecord(final Record original) {
     try {
       return new Record(
-          encryption.encrypt(original.key),
+          original.key,
           encryption.encrypt(original.data)
       );
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw toRuntimeException(e);
     }
   }
 
@@ -183,11 +183,11 @@ public class RandomAccessFileStorage implements Storage {
   private Record decryptRecord(final Record encrypted) {
     try {
       return new Record(
-          encryption.decrypt(encrypted.key),
+          encrypted.key,
           encryption.decrypt(encrypted.data)
       );
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw toRuntimeException(e);
     }
   }
 
@@ -207,7 +207,7 @@ public class RandomAccessFileStorage implements Storage {
       return new Record(keyBytes, dataBytes);
 
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw toRuntimeException(e);
     }
   }
 
@@ -237,11 +237,17 @@ public class RandomAccessFileStorage implements Storage {
           throw new RuntimeException("Data is corrupted at " + file.getFilePointer());
         }
 
-        final byte[] decryptedKey = encryption.decrypt(key);
-        index.put(new BytesWrapper(decryptedKey), pos);
+        index.put(new BytesWrapper(key), pos);
 
         file.seek(file.getFilePointer() + dataSize);
       }
     }
+  }
+
+  /**
+   * Converts checked exception to runtime exception so that no mandatory try-catch is required.
+   */
+  private RuntimeException toRuntimeException(Exception e) {
+    return new RuntimeException(e);
   }
 }
