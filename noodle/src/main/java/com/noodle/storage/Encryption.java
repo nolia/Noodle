@@ -7,6 +7,28 @@ public interface Encryption {
 
   /**
    * Cipher the data
+   * @param key key of persisted data
+   * @param data data to cypher
+   * @return cyphered data
+   * @throws Exception
+   */
+  default byte[] encrypt(byte[] key, byte[] data) throws Exception {
+    return encrypt(data);
+  }
+
+  /**
+   * Decrypts the data
+   * @param key key of persisted data
+   * @param data encrypted data
+   * @return decrypted data
+   * @throws Exception
+   */
+  default byte[] decrypt(byte[] key, byte[] data) throws Exception {
+    return decrypt(data);
+  }
+
+  /**
+   * Cipher the data
    * @param data data to cypher
    * @return cyphered data
    * @throws Exception
