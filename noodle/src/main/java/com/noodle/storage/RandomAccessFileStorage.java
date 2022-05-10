@@ -158,7 +158,7 @@ public class RandomAccessFileStorage implements Storage {
     try {
       return new Record(
           original.key,
-          encryption.encrypt(original.data)
+          encryption.encrypt(original.key, original.data)
       );
     } catch (Exception e) {
       throw toRuntimeException(e);
@@ -184,7 +184,7 @@ public class RandomAccessFileStorage implements Storage {
     try {
       return new Record(
           encrypted.key,
-          encryption.decrypt(encrypted.data)
+          encryption.decrypt(encrypted.key, encrypted.data)
       );
     } catch (Exception e) {
       throw toRuntimeException(e);
